@@ -1,7 +1,7 @@
 from distutils.core import setup
 from pip.req import parse_requirements
 
-with open('README.rst') as description:
+with open('README.md') as description:
     long_description = description.read()
 
 setup(
