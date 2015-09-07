@@ -28,5 +28,7 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3.4',
     ],
-    install_requires=iter(open('requirements.txt', 'r').readline, ''),
+    install_requires=[
+        'django>=1.8',
+    ],
 )
