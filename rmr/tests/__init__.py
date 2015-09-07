@@ -1,4 +1,3 @@
-# TODO: make open source package
 class DataSet:
 
     def __init__(self, *args, **kwargs):
