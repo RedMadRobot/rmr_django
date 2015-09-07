@@ -1,5 +1,4 @@
 from distutils.core import setup
-from pip.req import parse_requirements
 
 with open('README.md') as description:
     long_description = description.read()
@@ -29,8 +28,5 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3.4',
     ],
-    install_requires=[
-        str(requirement.req)
-        for requirement in parse_requirements('requirements.txt')
-    ],
+    install_requires=iter(open('requirements.txt', 'r').readline, ''),
 )
