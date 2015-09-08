@@ -10,9 +10,8 @@ setup(
     author_email='rh@redmadrobot.com',
     packages=[
         'rmr',
-        'rmr/django',
-        'rmr/django/middleware',
-        'rmr/django/middleware/request',
+        'rmr/middleware',
+        'rmr/middleware/request',
         'rmr/models',
         'rmr/models/fields',
         'rmr/views',
