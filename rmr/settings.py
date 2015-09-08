@@ -27,18 +27,11 @@ DEBUG = False
 
 ALLOWED_HOSTS = []
 
-
-# Application definition
-
-INSTALLED_APPS = (
-    'rmr',
-)
-
 MIDDLEWARE_CLASSES = (
-    'rmr.django.middleware.request.json.Decoder',
+    'middleware.request.json.Decoder',
 )
 
-ROOT_URLCONF = 'urls'
+ROOT_URLCONF = None
 
 
 # Database
