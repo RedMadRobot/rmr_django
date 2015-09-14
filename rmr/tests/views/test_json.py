@@ -42,9 +42,9 @@ urlpatterns = [
 class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
 
     @data_provider(
-        DataSet('warning', ApiWarning.http_status_code),
-        DataSet('error', ApiError.http_status_code),
-        DataSet('ok', Json.http_status_code),
+        DataSet('warning', ApiWarning.http_code),
+        DataSet('error', ApiError.http_code),
+        DataSet('ok', Json.http_code),
     )
     def test_status_code(self, url_name, expected_status_code):
         client = django.test.Client()

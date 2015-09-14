@@ -5,13 +5,14 @@ class ApiError(Exception):
 
     level = logging.ERROR
 
-    http_status_code = 500
+    http_code = 500
 
-    def __init__(self, message, code=None, level=None, *args, **kwargs):
-        super().__init__(message, code)
+    def __init__(self, message, *, code=None, level=None, http_code=None):
+        super().__init__(message)
         self.message = message
         self.code = code
         self.level = level or self.level
+        self.http_code = http_code or self.http_code
 
     def __str__(self):
         return '[{code}] {message}'.format(message=self.message, code=self.code)
@@ -21,7 +22,7 @@ class ApiWarning(ApiError):
 
     level = logging.WARNING
 
-    http_status_code = 400
+    http_code = 400
 
 
 def handle_error(error, exception=None):

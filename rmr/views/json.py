@@ -8,14 +8,14 @@ from rmr.errors import ApiError
 
 class Json(View):
 
-    http_status_code = 200
+    http_code = 200
 
     error_code_success = ''
 
     logger = logging.getLogger('backend')
 
     def dispatch(self, request, *args, **kwargs):
-        http_status_code = self.http_status_code
+        http_code = self.http_code
         try:
             result = super().dispatch(request, *args, **kwargs)
             if isinstance(result, HttpResponse):
@@ -32,14 +32,14 @@ class Json(View):
                 dict(message=error.message, code=error.code),
             )
 
-            http_status_code = error.http_status_code
+            http_code = error.http_code
 
             api_result = dict(
                 error_code=error.code,
                 result=None,
             )
 
-        return JsonResponse(api_result, status=http_status_code)
+        return JsonResponse(api_result, status=http_code)
 
     @staticmethod
     def get_device_id(request):
