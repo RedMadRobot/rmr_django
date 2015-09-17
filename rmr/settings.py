@@ -27,6 +27,13 @@ DEBUG = False
 
 ALLOWED_HOSTS = []
 
+
+# Application definition
+
+INSTALLED_APPS = (
+    'rmr',
+)
+
 MIDDLEWARE_CLASSES = (
     'middleware.request.json.Decoder',
 )
