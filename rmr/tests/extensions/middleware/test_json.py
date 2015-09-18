@@ -4,7 +4,7 @@ import django.test
 from rmr.tests import data_provider, DataSet, Parametrized
 
 
-class DecoderTestCase(django.test.TestCase, metaclass=Parametrized):
+class RequestDecoderTestCase(django.test.TestCase, metaclass=Parametrized):
 
     def test_wrong_charset(self):
         client = django.test.Client()

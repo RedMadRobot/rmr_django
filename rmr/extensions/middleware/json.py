@@ -4,7 +4,7 @@ from django.conf import settings
 from django.http import HttpResponseBadRequest, QueryDict
 
 
-class Decoder:
+class RequestDecoder:
 
     content_type = 'application/json'
 

@@ -35,7 +35,7 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    'middleware.request.json.Decoder',
+    'rmr.extensions.middleware.json.RequestDecoder',
 )
 
 ROOT_URLCONF = None
