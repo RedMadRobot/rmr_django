@@ -1,10 +1,11 @@
 import django.test
+
 from django.conf.urls import url
 from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
 
 from rmr.errors import ApiWarning, ApiError
-from rmr.tests import data_provider, DataSet, Parametrized
+from rmr.utils.test import data_provider, DataSet, Parametrized
 from rmr.views import Json
 
 

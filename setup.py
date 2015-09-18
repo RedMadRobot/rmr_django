@@ -5,7 +5,7 @@ with open('README.md') as description:
 
 setup(
     name='rmr_django',
-    version='0.0.1',
+    version='0.0.2',
     author='Rinat Khabibiev',
     author_email='rh@redmadrobot.com',
     packages=[
@@ -15,10 +15,6 @@ setup(
         'rmr/models',
         'rmr/models/fields',
         'rmr/views',
-        'rmr/tests',
-        'rmr/tests/extensions',
-        'rmr/tests/extensions/middleware',
-        'rmr/tests/views',
     ],
     url='https://github.com/RedMadRobot/rmr_django',
     license='MIT',
@@ -32,6 +28,6 @@ setup(
         'Programming Language :: Python :: 3.4',
     ],
     install_requires=[
-        'django>=1.8',
+        'django>=1.8,<2.0',
     ],
 )

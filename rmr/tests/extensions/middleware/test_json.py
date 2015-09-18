@@ -1,7 +1,7 @@
 import django.http
 import django.test
 
-from rmr.tests import data_provider, DataSet, Parametrized
+from rmr.utils.test import data_provider, DataSet, Parametrized
 
 
 class RequestDecoderTestCase(django.test.TestCase, metaclass=Parametrized):
