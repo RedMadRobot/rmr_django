@@ -7,7 +7,7 @@ class ApiError(Exception):
 
     http_code = 500
 
-    def __init__(self, message, *, code=None, level=None, http_code=None):
+    def __init__(self, message='', *, code=None, level=None, http_code=None):
         super().__init__(message)
         self.message = message
         self.code = code
