@@ -9,7 +9,7 @@ class RequestDecoder:
     content_type = 'application/json'
 
     allowed_methods = {
-        'POST', 'PUT',
+        'POST', 'PUT', 'PATCH',
     }
 
     def process_request(self, request):
