@@ -10,8 +10,6 @@ class Json(View):
 
     http_code = 200
 
-    error_code_success = ''
-
     logger = logging.getLogger('backend')
 
     def dispatch(self, request, *args, **kwargs):
@@ -21,8 +19,7 @@ class Json(View):
             if isinstance(result, HttpResponse):
                 return result
             api_result = dict(
-                error_code=self.error_code_success,
-                result=result,
+                data=result,
             )
         except ApiError as error:
 
@@ -35,8 +32,11 @@ class Json(View):
             http_code = error.http_code
 
             api_result = dict(
-                error_code=error.code,
-                result=None,
+                error=dict(
+                    code=http_code,
+                    error_message=error.message,
+                    description=error.code,
+                ),
             )
 
         return JsonResponse(api_result, status=http_code)
