@@ -33,9 +33,8 @@ class Json(View):
 
             api_result = dict(
                 error=dict(
-                    code=http_code,
-                    error_message=error.message,
-                    description=error.code,
+                    code=error.code,
+                    description=error.message,
                 ),
             )
 
