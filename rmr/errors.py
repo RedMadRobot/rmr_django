@@ -1,11 +1,11 @@
 import logging
 
 
-class ApiError(Exception):
+class RmrError(Exception):
 
-    level = logging.ERROR
+    level = logging.NOTSET
 
-    http_code = 500
+    http_code = NotImplemented
 
     message = NotImplemented
 
@@ -22,7 +22,14 @@ class ApiError(Exception):
         return '[{code}] {message}'.format(message=self.message, code=self.code)
 
 
-class ApiWarning(ApiError):
+class ApiError(RmrError):
+
+    level = logging.ERROR
+
+    http_code = 500
+
+
+class ApiWarning(RmrError):
 
     level = logging.WARNING
 
