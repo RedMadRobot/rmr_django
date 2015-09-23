@@ -5,7 +5,7 @@ with open('README.md') as description:
 
 setup(
     name='rmr_django',
-    version='1.0.5',
+    version='1.0.6',
     author='Rinat Khabibiev',
     author_email='rh@redmadrobot.com',
     packages=[

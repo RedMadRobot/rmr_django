@@ -1,4 +1,4 @@
-from rmr.errors import ApiWarning
+from rmr.errors import ClientError
 
 from .json import Json
 
@@ -6,7 +6,7 @@ from .json import Json
 def anonymous_required(fn):
     def _fn(self, request, *args, **kwargs):
         if request.user.is_authenticated():
-            raise ApiWarning(
+            raise ClientError(
                 'User already registered',
                 code='user_already_registered',
             )
@@ -17,7 +17,7 @@ def anonymous_required(fn):
 def login_required(fn):
     def _fn(self, request, *args, **kwargs):
         if request.user.is_anonymous():
-            raise ApiWarning(
+            raise ClientError(
                 'User not authenticated',
                 code='user_not_authenticated',
             )

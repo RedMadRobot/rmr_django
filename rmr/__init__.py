@@ -1,1 +1,1 @@
-from .errors import ApiError, ApiWarning
+from .errors import ServerError, ClientError

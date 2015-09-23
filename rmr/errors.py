@@ -22,14 +22,14 @@ class RmrError(Exception):
         return '[{code}] {message}'.format(message=self.message, code=self.code)
 
 
-class ApiError(RmrError):
+class ServerError(RmrError):
 
     level = logging.ERROR
 
     http_code = 500
 
 
-class ApiWarning(RmrError):
+class ClientError(RmrError):
 
     level = logging.WARNING
 
