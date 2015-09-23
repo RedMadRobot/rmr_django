@@ -3,7 +3,7 @@ import logging
 from django.http import JsonResponse, HttpResponse
 from django.views.generic import View
 
-from rmr.errors import ApiError
+from rmr.errors import RmrError
 
 
 class Json(View):
@@ -21,7 +21,7 @@ class Json(View):
             api_result = dict(
                 data=result,
             )
-        except ApiError as error:
+        except RmrError as error:
 
             self.logger.log(
                 error.level,
