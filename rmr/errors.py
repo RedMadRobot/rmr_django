@@ -1,7 +1,7 @@
 import logging
 
 
-class RmrError(Exception):
+class Error(Exception):
 
     level = logging.NOTSET
 
@@ -22,14 +22,14 @@ class RmrError(Exception):
         return '[{code}] {message}'.format(message=self.message, code=self.code)
 
 
-class ServerError(RmrError):
+class ServerError(Error):
 
     level = logging.ERROR
 
     http_code = 500
 
 
-class ClientError(RmrError):
+class ClientError(Error):
 
     level = logging.WARNING
 

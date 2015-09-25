@@ -1,1 +1,1 @@
-from .errors import ServerError, ClientError
+from .errors import Error, ServerError, ClientError
