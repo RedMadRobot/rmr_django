@@ -16,7 +16,7 @@ class RequestDecoder:
         if request.method not in self.allowed_methods:
             return
         content_type = request.META.get('CONTENT_TYPE')
-        if content_type != self.content_type:
+        if not content_type.startswith(self.content_type):
             return
         encoding = request.encoding or settings.DEFAULT_CHARSET
         try:
