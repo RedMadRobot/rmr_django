@@ -15,7 +15,7 @@ class RequestDecoder:
     def process_request(self, request):
         if request.method not in self.allowed_methods:
             return
-        content_type = request.META.get('CONTENT_TYPE')
+        content_type = request.META.get('CONTENT_TYPE', '')
         if not content_type.startswith(self.content_type):
             return
         encoding = request.encoding or settings.DEFAULT_CHARSET
