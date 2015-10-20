@@ -1,6 +1,6 @@
 import logging
 
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpRequest
 from django.views.generic import View
 
 import rmr
@@ -10,9 +10,9 @@ class Json(View):
 
     http_code = 200
 
-    logger = logging.getLogger('backend')
+    logger = logging.getLogger('rmr.request')
 
-    def dispatch(self, request, *args, **kwargs):
+    def dispatch(self, request: HttpRequest, *args, **kwargs):
         http_code = self.http_code
         try:
             result = super().dispatch(request, *args, **kwargs)
@@ -21,6 +21,18 @@ class Json(View):
             api_result = dict(
                 data=result,
             )
+
+            self.logger.debug(
+                'request_headers: %(request_headers)s, '
+                'request_params: %(request_params)s, '
+                'request_data: %(request_data)s, '
+                'response_data: %(response_data)s, ',
+                request_headers=request.META,
+                request_params=request.GET,
+                request_data=request.POST,
+                response_data=result,
+            )
+
         except rmr.Error as error:
 
             self.logger.log(
