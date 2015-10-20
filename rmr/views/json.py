@@ -27,10 +27,12 @@ class Json(View):
                 'request_params: %(request_params)s, '
                 'request_data: %(request_data)s, '
                 'response_data: %(response_data)s, ',
-                request_headers=request.META,
-                request_params=request.GET,
-                request_data=request.POST,
-                response_data=result,
+                dict(
+                    request_headers=request.META,
+                    request_params=request.GET,
+                    request_data=request.POST,
+                    response_data=result,
+                ),
             )
 
         except rmr.Error as error:
