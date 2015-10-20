@@ -10,7 +10,7 @@ class Json(View):
 
     http_code = 200
 
-    logger = logging.getLogger('rmr.request')
+    logger = logging.getLogger('rmr')
 
     def dispatch(self, request: HttpRequest, *args, **kwargs):
         http_code = self.http_code
