@@ -27,7 +27,7 @@ class Parametrized(type):
                 continue
             for data_set in data_sets:
                 test_name = '{}_{}'.format(method_name, data_set)
-                actual_attrs[test_name] = (lambda m: (
-                    lambda self: m(self, *data_set.args, **data_set.kwargs)
-                ))(method)
+                actual_attrs[test_name] = (lambda m, ds: (
+                    lambda self: m(self, *ds.args, **ds.kwargs)
+                ))(method, data_set)
         return super().__new__(mcs, name, mro, actual_attrs)
