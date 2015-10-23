@@ -21,20 +21,6 @@ class Json(View):
             api_result = dict(
                 data=result,
             )
-
-            self.logger.debug(
-                'request_headers: %(request_headers)s, '
-                'request_params: %(request_params)s, '
-                'request_data: %(request_data)s, '
-                'response_data: %(response_data)s, ',
-                dict(
-                    request_headers=request.META,
-                    request_params=request.GET,
-                    request_data=request.POST,
-                    response_data=result,
-                ),
-            )
-
         except rmr.Error as error:
 
             self.logger.log(
@@ -51,6 +37,23 @@ class Json(View):
                     description=error.message,
                 ),
             )
+
+        self.logger.debug(
+            'request_path: %(request_path)s, '
+            'request_headers: %(request_headers)s, '
+            'request_params: %(request_params)s, '
+            'request_data: %(request_data)s, '
+            'response_code: %(response_code)s, '
+            'response_data: %(response_data)s',
+            dict(
+                request_path=request.path,
+                request_headers=request.META,
+                request_params=request.GET,
+                request_data=request.POST,
+                response_code=http_code,
+                response_data=api_result,
+            ),
+        )
 
         return JsonResponse(api_result, status=http_code)
 
