@@ -39,6 +39,7 @@ class Json(View):
             )
 
         self.logger.debug(
+            'request_method: %(request_method)s, '
             'request_path: %(request_path)s, '
             'request_headers: %(request_headers)s, '
             'request_params: %(request_params)s, '
@@ -46,6 +47,7 @@ class Json(View):
             'response_code: %(response_code)s, '
             'response_data: %(response_data)s',
             dict(
+                request_method=request.method,
                 request_path=request.path,
                 request_headers=request.META,
                 request_params=request.GET,
