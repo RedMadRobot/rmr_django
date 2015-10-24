@@ -14,6 +14,6 @@ class TestUtilsTestCase(unittest.TestCase):
             mocked_datetime_class.now(),
         )
         self.assertEqual(
-            expected_datetime.date(),
+            expected_datetime,
             mocked_datetime_class.today(),
         )

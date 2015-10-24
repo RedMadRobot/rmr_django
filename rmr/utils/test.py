@@ -41,10 +41,10 @@ def mocked_datetime(dt: datetime.datetime):
     class MockedDatetime(datetime.datetime):
         @classmethod
         def now(cls, tz=None):
-            return dt
+            return dt.replace(tzinfo=tz)
 
         @classmethod
         def today(cls):
-            return dt.date()
+            return cls.now()
 
     return MockedDatetime
