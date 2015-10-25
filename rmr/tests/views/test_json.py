@@ -4,7 +4,7 @@ from django.conf.urls import url
 from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
 
-from rmr.errors import ApiWarning, ApiError
+from rmr.errors import ClientError, ServerError
 from rmr.utils.test import data_provider, DataSet, Parametrized
 from rmr.views import Json
 
@@ -14,7 +14,7 @@ class JsonWithWarning(Json):
     type = 'WARNING_TEST_CASE'
 
     def get(self, request):
-        raise ApiWarning('WARNING_TEST_CASE', code='warning_test_case')
+        raise ClientError('WARNING_TEST_CASE', code='warning_test_case')
 
 
 class JsonWithError(Json):
@@ -22,7 +22,7 @@ class JsonWithError(Json):
     type = 'ERROR_TEST_CASE'
 
     def get(self, request):
-        raise ApiError('ERROR_TEST_CASE', code='error_test_case')
+        raise ServerError('ERROR_TEST_CASE', code='error_test_case')
 
 
 class JsonWithoutError(Json):
@@ -43,8 +43,8 @@ urlpatterns = [
 class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
 
     @data_provider(
-        DataSet('warning', ApiWarning.http_code),
-        DataSet('error', ApiError.http_code),
+        DataSet('warning', ClientError.http_code),
+        DataSet('error', ServerError.http_code),
         DataSet('ok', Json.http_code),
     )
     def test_status_code(self, url_name, expected_status_code):

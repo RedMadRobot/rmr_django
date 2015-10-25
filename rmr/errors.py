@@ -1,16 +1,20 @@
 import logging
 
 
-class ApiError(Exception):
+class Error(Exception):
 
-    level = logging.ERROR
+    level = logging.NOTSET
 
-    http_code = 500
+    http_code = NotImplemented
 
-    def __init__(self, message, *, code=None, level=None, http_code=None):
+    message = NotImplemented
+
+    code = NotImplemented
+
+    def __init__(self, message=None, *, code=None, level=None, http_code=None):
         super().__init__(message)
-        self.message = message
-        self.code = code
+        self.message = message or self.message
+        self.code = code or self.code
         self.level = level or self.level
         self.http_code = http_code or self.http_code
 
@@ -18,7 +22,14 @@ class ApiError(Exception):
         return '[{code}] {message}'.format(message=self.message, code=self.code)
 
 
-class ApiWarning(ApiError):
+class ServerError(Error):
+
+    level = logging.ERROR
+
+    http_code = 500
+
+
+class ClientError(Error):
 
     level = logging.WARNING
 
