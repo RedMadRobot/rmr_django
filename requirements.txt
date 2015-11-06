@@ -1,1 +1,2 @@
 django~=1.8
+crcmod~=1.7
