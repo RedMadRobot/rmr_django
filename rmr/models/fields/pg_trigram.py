@@ -14,4 +14,4 @@ class PgTrigramTextField(models.TextField):
 @PgTrigramTextField.register_lookup
 class SimilarTo(lookups.PostgresSimpleLookup):
     lookup_name = 'similar'
-    operator = '%'
+    operator = '%%'  # escaped '%'
