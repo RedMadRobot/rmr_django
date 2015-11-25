@@ -4,9 +4,10 @@ from collections import deque
 
 def split_every(iterable, chunk_size):
     """Split given iterator into chunks with given length."""
-    it = iter(iterable)
+    iterator = iter(iterable)
     while True:
-        piece = itertools.islice(it, chunk_size)
-        piece = itertools.chain((next(piece),), piece)
-        yield piece
-        deque(iterable, 0)
+        chunk = itertools.islice(iterator, chunk_size)
+        first_item = next(chunk)  # raises StopIteration when `iterator` is empty
+        chunk = itertools.chain((first_item,), chunk)
+        yield chunk
+        deque(chunk, 0)  # Exhaust unused `chunk`
