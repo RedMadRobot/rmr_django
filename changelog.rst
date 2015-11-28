@@ -1,6 +1,12 @@
 Changelog
 =========
 
+Release 1.0.16
+--------------
+
+- Enhancement: Added :code:`rmr.utils.hash.crc32()` and :code:`rmr.utils.hash.crc64()` functions
+- Enhancement: Added :code:`rmr.utils.iterate.split_every()` function
+
 Release 1.0.15
 --------------
 
