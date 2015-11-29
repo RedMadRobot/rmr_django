@@ -11,3 +11,7 @@ def split_every(iterable, chunk_size):
         chunk = itertools.chain((first_item,), chunk)
         yield chunk
         collections.deque(chunk, 0)  # Exhaust unused `chunk`
+
+
+def unique(iterable):
+    return collections.OrderedDict.fromkeys(iterable).keys()
