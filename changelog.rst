@@ -4,6 +4,7 @@ Changelog
 Release 1.0.17
 --------------
 
+- Enhancement: Added custom PostgreSQL range fields with :code:`upper` and :code:`lower` lookups
 - Enhancement: Added :code:`rmr.management.commands.BaseCommand` class
 
 Release 1.0.16
