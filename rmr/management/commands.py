@@ -1,5 +1,4 @@
 import logging
-import os
 
 from django.core.management.base import BaseCommand as DjangoBaseCommand
 
@@ -13,7 +12,7 @@ class BaseCommand(DjangoBaseCommand):
 
     @property
     def logger_name(self):
-        return os.path.splitext(os.path.basename(__file__))[0]
+        return self.__class__.__module__.rpartition('.')[2]
 
     @staticmethod
     def get_logger_level(verbosity):
