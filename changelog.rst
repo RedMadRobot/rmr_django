@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Release 1.0.17
+--------------
+
+- Enhancement: Added :code:`rmr.management.commands.BaseCommand` class
+
 Release 1.0.16
 --------------
 
