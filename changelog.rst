@@ -1,7 +1,11 @@
 Changelog
 =========
 
-Release 1.0.17
+Release 1.0.18
+--------------
+
+- Enhancement: Removed unnecessary decorators :code:`anonymous_required` and :code:`login_required`
+
 --------------
 
 - Enhancement: Added custom PostgreSQL range fields with :code:`upper` and :code:`lower` lookups

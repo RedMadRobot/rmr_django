@@ -5,7 +5,7 @@ with open('README.md') as description:
 
 setup(
     name='rmr_django',
-    version='1.0.17',
+    version='1.0.18',
     author='Rinat Khabibiev',
     author_email='rh@redmadrobot.com',
     packages=[
@@ -28,7 +28,8 @@ setup(
         'Programming Language :: Python :: 3.4',
     ],
     install_requires=[
-        'django>=1.8,<1.9',
-        'crcmod>=1.7,<1.8',
+        'django>=1.8,<2.0',
+        'crcmod>=1.7,<2.0',
+        'psycopg2>=2.6,<3.0',
     ],
 )
