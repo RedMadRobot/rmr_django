@@ -4,9 +4,6 @@ Changelog
 Release 1.0.19
 --------------
 
-- Enhancement: Added fixed version of 'Europe/Moscow' timezone
-- Enhancement: Added 'CEST' timezone
-
 Release 1.0.18
 --------------
 
