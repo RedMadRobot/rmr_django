@@ -4,7 +4,7 @@ from django.utils import timezone
 
 
 def fromtimestamp(timestamp):
-    datetime.fromtimestamp(timestamp, tz=timezone.get_current_timezone())
+    return datetime.fromtimestamp(timestamp, tz=timezone.get_current_timezone())
 
 
 def strptime(date_string, format, default_tz=timezone.utc):
