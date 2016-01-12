@@ -5,11 +5,12 @@ Release 1.0.19
 --------------
 
 - Enhancement: Added :code:`rmr.utils.datetime.fromtimestamp()` and :code:`rmr.utils.datetime.strptime()`
+- Enhancement: Removed :code:`rmr.utils.test.mocked_datetime()`
 
 Release 1.0.18
 --------------
 
-- Enhancement: Removed unnecessary decorators :code:`anonymous_required` and :code:`login_required`
+- Enhancement: Removed decorators :code:`anonymous_required` and :code:`login_required`
 
 --------------
 

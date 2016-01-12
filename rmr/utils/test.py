@@ -1,6 +1,3 @@
-import datetime
-
-
 class DataSet:
 
     def __init__(self, *args, **kwargs):
@@ -34,17 +31,3 @@ class Parametrized(type):
                     lambda self: m(self, *ds.args, **ds.kwargs)
                 ))(method, data_set)
         return super().__new__(mcs, name, mro, actual_attrs)
-
-
-def mocked_datetime(dt: datetime.datetime):
-
-    class MockedDatetime(datetime.datetime):
-        @classmethod
-        def now(cls, tz=None):
-            return dt.replace(tzinfo=tz)
-
-        @classmethod
-        def today(cls):
-            return cls.now()
-
-    return MockedDatetime
