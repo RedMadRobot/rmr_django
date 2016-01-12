@@ -4,6 +4,8 @@ Changelog
 Release 1.0.19
 --------------
 
+- Enhancement: Added :code:`rmr.utils.datetime.fromtimestamp()`
+
 Release 1.0.18
 --------------
 
