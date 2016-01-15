@@ -223,6 +223,7 @@ class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
         response = client.get(path, data=dict(
             get_required=123,
             get_not_required=123,
+            unknown=123,
         ))
         self.assertEqual(
             200,
@@ -235,6 +236,7 @@ class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
             data=json.dumps(dict(
                 post_required=123,
                 post_not_required=123,
+                unknown=123,
             )),
             content_type='application/json',
         )
