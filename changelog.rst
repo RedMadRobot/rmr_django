@@ -1,6 +1,12 @@
 Changelog
 =========
 
+Release 1.0.20
+--------------
+
+- Enhancement: Added :code:`rmr.utils.iterate.multimap()`
+- Enhancement: Added decorator :code:`rmr.views.validate_request()`
+
 Release 1.0.19
 --------------
 
