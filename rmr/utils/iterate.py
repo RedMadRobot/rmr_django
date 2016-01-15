@@ -18,6 +18,9 @@ def unique(iterable):
 
 
 def multimap(fn_list, *iterables):
+    """Sequentially applies all callable from `fn_list`
+    to every item of `iterables`, yielding the results
+    """
     for args in zip(*iterables):
         fn_list, fns = itertools.tee(fn_list)
         fn = next(fns)
