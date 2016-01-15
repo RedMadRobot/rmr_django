@@ -15,3 +15,13 @@ def split_every(iterable, chunk_size):
 
 def unique(iterable):
     return collections.OrderedDict.fromkeys(iterable).keys()
+
+
+def multimap(fn_list, *iterables):
+    for args in zip(*iterables):
+        fn_list, fns = itertools.tee(fn_list)
+        fn = next(fns)
+        result = fn(*args)
+        for fn in fns:
+            result = fn(result)
+        yield result
