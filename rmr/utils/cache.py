@@ -1,3 +1,5 @@
+import contextlib
+
 from django.core.cache.backends import memcached
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
 from django.utils.functional import cached_property
@@ -37,6 +39,6 @@ class RmrLibMCCache(memcached.PyLibMCCache):
     """
 
     def get_backend_timeout(self, timeout=DEFAULT_TIMEOUT):
-        if timeout is not DEFAULT_TIMEOUT:
+        with contextlib.suppress(TypeError):
             timeout = 0 + timeout
         return super().get_backend_timeout(timeout=timeout)
