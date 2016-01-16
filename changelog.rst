@@ -5,6 +5,7 @@ Release 1.0.21
 --------------
 
 - Enhancement: Added :code:`rmr.utils.cache.CacheTimeout`, lazy value for :code:`django.views.decorators.cache.cache_page` decorator
+- Enhancement: Added custom cache backend :code:`rmr.utils.cache.RmrLibMCCache` which enables to use :code:`rmr.utils.cache.CacheTimeout` decorator
 
 Release 1.0.20
 --------------
