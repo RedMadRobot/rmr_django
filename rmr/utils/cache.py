@@ -1,4 +1,5 @@
 from django.core.cache.backends import memcached
+from django.core.cache.backends.base import DEFAULT_TIMEOUT
 from django.utils.functional import cached_property
 
 
@@ -35,8 +36,7 @@ class RmrLibMCCache(memcached.PyLibMCCache):
     :code:`rmr.utils.cache.CacheTimeout`
     """
 
-    def get_backend_timeout(self, **kwargs):
-        if 'timeout' in kwargs:
-            if isinstance(kwargs['timeout'], CacheTimeout):
-                kwargs['timeout'] = kwargs['timeout'].cache_timeout
-        return super().get_backend_timeout(**kwargs)
+    def get_backend_timeout(self, timeout=DEFAULT_TIMEOUT):
+        if timeout is not DEFAULT_TIMEOUT:
+            timeout = 0 + timeout
+        return super().get_backend_timeout(timeout=timeout)
