@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Release 1.0.21
+--------------
+
+- Enhancement: Added :code:`rmr.utils.cache.CacheTimeout`, lazy value for :code:`django.views.decorators.cache.cache_page` decorator
+
 Release 1.0.20
 --------------
 
