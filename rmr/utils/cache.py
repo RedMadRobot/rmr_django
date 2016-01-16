@@ -6,7 +6,7 @@ class CacheTimeout:
     for `django.views.decorators.cache.cache_page` decorator
     """
 
-    def __init__(self, get_cache_timeout=None):
+    def __init__(self, get_cache_timeout):
         self.get_cache_timeout = get_cache_timeout
 
     @cached_property
