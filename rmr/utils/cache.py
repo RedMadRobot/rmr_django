@@ -1,6 +1,5 @@
 import contextlib
 
-import functools
 from django.core.cache.backends import memcached
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
 from django.utils.functional import cached_property
