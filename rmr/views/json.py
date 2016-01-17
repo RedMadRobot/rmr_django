@@ -2,12 +2,45 @@ import contextlib
 import logging
 
 from django.http import JsonResponse, HttpResponse, HttpRequest
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page, cache_control
+from django.views.decorators.http import last_modified
 from django.views.generic import View
 
 import rmr
 
+from rmr.utils.cache import CacheTimeout
 
-class Json(View):
+
+class HttpCacheHeaders(type):
+
+    dispatch_original = None
+
+    cache_control = {  # TODO lazy evaluating
+        'public': True,
+    }
+
+    @staticmethod
+    def last_modified(request: HttpRequest, *args, **kwargs):
+        pass
+
+    def _last_modified(cls, request: HttpRequest, *args, **kwargs):
+        if request.method in ('GET', 'HEAD'):
+            return cls.last_modified(request, *args, **kwargs)
+
+    @staticmethod
+    def expires():
+        return -1  # expires immediately
+
+    def __init__(cls, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        cls.dispatch = cls.dispatch_original = cls.dispatch_original or cls.dispatch
+        cls.dispatch = method_decorator(last_modified(cls._last_modified))(cls.dispatch)
+        cls.dispatch = method_decorator(cache_control(**cls.cache_control))(cls.dispatch)
+        cls.dispatch = method_decorator(cache_page(CacheTimeout(cls.expires)))(cls.dispatch)
+
+
+class Json(View, metaclass=HttpCacheHeaders):
 
     http_code = 200
 

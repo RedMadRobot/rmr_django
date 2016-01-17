@@ -1,22 +1,24 @@
 import json
 import urllib.parse
 
+from datetime import datetime
+
 import django.test
 
 from django import forms
 from django.conf.urls import url
 from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 
 from rmr.errors import ClientError, ServerError
 from rmr.utils.test import data_provider, DataSet, Parametrized
-from rmr.views import Json, validate_request
+from rmr.views import Json
+from rmr.views.decorators.validation import validate_request
 
 
 class JsonWithWarning(Json):
-
-    type = 'WARNING_TEST_CASE'
 
     def get(self, request):
         raise ClientError('WARNING_TEST_CASE', code='warning_test_case')
@@ -24,17 +26,20 @@ class JsonWithWarning(Json):
 
 class JsonWithError(Json):
 
-    type = 'ERROR_TEST_CASE'
-
     def get(self, request):
         raise ServerError('ERROR_TEST_CASE', code='error_test_case')
 
 
 class JsonWithoutError(Json):
 
-    type = 'NORMAL_TEST_CASE'
+    @staticmethod
+    def last_modified(request, *args, **kwargs):
+        return datetime(2015, 1, 1, tzinfo=timezone.utc)
 
     def get(self, request):
+        pass
+
+    def post(self, request):
         pass
 
 
@@ -84,6 +89,36 @@ class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
         client = django.test.Client()
         response = client.get(reverse(url_name))
         self.assertEqual(expected_status_code, response.status_code)
+
+    def test_http_headers(self):
+        client = django.test.Client()
+        response = client.get(reverse('ok'))
+        self.assertEqual(Json.http_code, response.status_code)
+        self.assertIn('Expires', response)
+        self.assertIn('max-age=0', response['Cache-Control'])
+        self.assertIn('public', response['Cache-Control'])
+        self.assertEqual('Thu, 01 Jan 2015 00:00:00 GMT', response['Last-Modified'])
+        self.assertEqual('application/json', response['Content-Type'])
+
+        response = client.post(reverse('ok'))
+        self.assertEqual(Json.http_code, response.status_code)
+        self.assertNotIn('Expires', response)
+        self.assertNotIn('max-age=0', response.get('Cache-Control', ''))
+        self.assertNotIn('Last-Modified', response)
+        # self.assertNotIn('Cache-Control', response)  # TODO
+        self.assertEqual('application/json', response['Content-Type'])
+
+        response = client.get(
+            reverse('ok'),
+            HTTP_IF_MODIFIED_SINCE='Thu, 01 Jan 2015 00:00:00 GMT',
+        )
+        self.assertEqual(304, response.status_code)
+
+        response = client.post(
+            reverse('ok'),
+            HTTP_IF_MODIFIED_SINCE='Thu, 01 Jan 2015 00:00:00 GMT',
+        )
+        self.assertEqual(Json.http_code, response.status_code)
 
     @data_provider(
         DataSet(
