@@ -8,6 +8,7 @@ Release 1.0.21
 - Enhancement: Added custom cache backend :code:`rmr.utils.cache.RmrLibMCCache` which enables to use :code:`rmr.utils.cache.CacheTimeout` decorator
 - Enhancement: Added HTTP-caching headers management to the :code:`rmr.views.Json`
 - Enhancement: Moved :code:`validate_request` decorator to :code:`rmr.views.decorators.validation` module
+- Enhancement: Removed :code:`rmr.views.Json.get_device_id()` method
 
 Release 1.0.20
 --------------
