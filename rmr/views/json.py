@@ -9,14 +9,14 @@ from django.views.generic import View
 
 import rmr
 
-from rmr.utils.cache import CacheTimeout
-
 
 class HttpCacheHeaders(type):
 
     dispatch_original = None
 
-    cache_control = {  # TODO lazy evaluating
+    expires = -1  # expires immediately
+
+    cache_control = {
         'public': True,
     }
 
@@ -24,16 +24,12 @@ class HttpCacheHeaders(type):
     def last_modified(request: HttpRequest, *args, **kwargs):
         pass
 
-    @staticmethod
-    def expires():
-        return -1  # expires immediately
-
     def __init__(cls, *args, **kwargs):
         super().__init__(*args, **kwargs)
         cls.dispatch = cls.dispatch_original = cls.dispatch_original or cls.dispatch
         cls.dispatch = method_decorator(last_modified(cls.__last_modified))(cls.dispatch)
         cls.dispatch = method_decorator(cache_control(**cls.cache_control))(cls.dispatch)
-        cls.dispatch = method_decorator(cache_page(CacheTimeout(cls.expires)))(cls.dispatch)
+        cls.dispatch = method_decorator(cache_page(cls.expires))(cls.dispatch)
 
     def __last_modified(cls, request: HttpRequest, *args, **kwargs):
         if request.method in ('GET', 'HEAD'):
