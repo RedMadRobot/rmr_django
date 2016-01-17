@@ -1,5 +1,6 @@
 import contextlib
 
+import functools
 from django.core.cache.backends import memcached
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
 from django.utils.functional import cached_property
@@ -42,3 +43,16 @@ class RmrLibMCCache(memcached.PyLibMCCache):
         with contextlib.suppress(TypeError):
             timeout = 0 + timeout
         return super().get_backend_timeout(timeout=timeout)
+
+
+class cache_timeout:
+    """decorator transforming provided method to CacheTimeout instance"""
+
+    def __init__(self, method):
+        assert isinstance(method, (staticmethod, classmethod)), (
+            'cache_timeout can be applied only on static/class methods'
+        )
+        self.method = method
+
+    def __get__(self, instance, owner):
+        return CacheTimeout(self.method.__get__(instance, owner))

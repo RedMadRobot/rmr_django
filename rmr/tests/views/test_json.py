@@ -13,6 +13,7 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 
 from rmr.errors import ClientError, ServerError
+from rmr.utils.cache import cache_timeout
 from rmr.utils.test import data_provider, DataSet, Parametrized
 from rmr.views import Json
 from rmr.views.decorators.validation import validate_request
@@ -40,6 +41,17 @@ class JsonWithoutError(Json):
         pass
 
     def post(self, request):
+        pass
+
+
+class CacheJson(Json):
+
+    @cache_timeout
+    @staticmethod
+    def expires():
+        return 3600
+
+    def get(self, request):
         pass
 
 
@@ -74,6 +86,7 @@ urlpatterns = [
     url(r'error', JsonWithError.as_view(), name='error'),
     url(r'ok', JsonWithoutError.as_view(), name='ok'),
     url(r'validate', ValidationJson.as_view(), name='validate'),
+    url(r'cache', CacheJson.as_view(), name='cache'),
 ]
 
 
@@ -103,7 +116,7 @@ class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
         response = client.post(reverse('ok'))
         self.assertEqual(Json.http_code, response.status_code)
         self.assertNotIn('Expires', response)
-        self.assertNotIn('max-age=0', response.get('Cache-Control', ''))
+        self.assertNotIn('max-age', response.get('Cache-Control', ''))
         self.assertNotIn('Last-Modified', response)
         # self.assertNotIn('Cache-Control', response)  # TODO
         self.assertEqual('application/json', response['Content-Type'])
@@ -119,6 +132,13 @@ class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
             HTTP_IF_MODIFIED_SINCE='Thu, 01 Jan 2015 00:00:00 GMT',
         )
         self.assertEqual(Json.http_code, response.status_code)
+
+    def test_cache_response(self):
+        client = django.test.Client()
+        response = client.get(reverse('cache'))
+        self.assertEqual(Json.http_code, response.status_code)
+        self.assertIn('max-age=3600', response['Cache-Control'])
+        self.assertIn('Expires', response)
 
     @data_provider(
         DataSet(
