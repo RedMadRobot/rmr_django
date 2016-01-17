@@ -14,7 +14,8 @@ from django.utils.decorators import method_decorator
 
 from rmr.errors import ClientError, ServerError
 from rmr.utils.test import data_provider, DataSet, Parametrized
-from rmr.views import Json, validate_request
+from rmr.views import Json
+from rmr.views.decorators.validation import validate_request
 
 
 class JsonWithWarning(Json):
