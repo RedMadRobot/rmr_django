@@ -24,10 +24,6 @@ class HttpCacheHeaders(type):
     def last_modified(request: HttpRequest, *args, **kwargs):
         pass
 
-    def _last_modified(cls, request: HttpRequest, *args, **kwargs):
-        if request.method in ('GET', 'HEAD'):
-            return cls.last_modified(request, *args, **kwargs)
-
     @staticmethod
     def expires():
         return -1  # expires immediately
@@ -35,9 +31,13 @@ class HttpCacheHeaders(type):
     def __init__(cls, *args, **kwargs):
         super().__init__(*args, **kwargs)
         cls.dispatch = cls.dispatch_original = cls.dispatch_original or cls.dispatch
-        cls.dispatch = method_decorator(last_modified(cls._last_modified))(cls.dispatch)
+        cls.dispatch = method_decorator(last_modified(cls.__last_modified))(cls.dispatch)
         cls.dispatch = method_decorator(cache_control(**cls.cache_control))(cls.dispatch)
         cls.dispatch = method_decorator(cache_page(CacheTimeout(cls.expires)))(cls.dispatch)
+
+    def __last_modified(cls, request: HttpRequest, *args, **kwargs):
+        if request.method in ('GET', 'HEAD'):
+            return cls.last_modified(request, *args, **kwargs)
 
 
 class Json(View, metaclass=HttpCacheHeaders):
@@ -92,10 +92,6 @@ class Json(View, metaclass=HttpCacheHeaders):
         )
 
         return JsonResponse(api_result, status=http_code)
-
-    @staticmethod
-    def get_device_id(request):
-        return request.META.get('HTTP_DEVICE_ID')
 
     @staticmethod
     def get_range(offset=None, limit=None, limit_default=None, limit_max=None):
