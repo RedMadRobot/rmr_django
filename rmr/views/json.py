@@ -27,8 +27,8 @@ class HttpCacheHeaders(type):
         super().__init__(*args, **kwargs)
         cls.dispatch = cls.dispatch_original = cls.dispatch_original or cls.dispatch
         cls.dispatch = method_decorator(last_modified(cls.__last_modified))(cls.dispatch)
-        cls.dispatch = method_decorator(cache_control(**cls.cache_control))(cls.dispatch)
-        cls.dispatch = method_decorator(cache_page(cls.expires))(cls.dispatch)
+        # cls.dispatch = method_decorator(cache_control(**cls.cache_control))(cls.dispatch)
+        # cls.dispatch = method_decorator(cache_page(cls.expires))(cls.dispatch)
 
     def __last_modified(cls, request: HttpRequest, *args, **kwargs):
         if request.method in ('GET', 'HEAD'):
