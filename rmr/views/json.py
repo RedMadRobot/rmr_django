@@ -20,8 +20,7 @@ class HttpCacheHeaders(type):
         'public': True,
     }
 
-    @staticmethod
-    def last_modified(request: HttpRequest, *args, **kwargs):
+    def last_modified(cls, request: HttpRequest, *args, **kwargs):
         pass
 
     def __init__(cls, *args, **kwargs):
