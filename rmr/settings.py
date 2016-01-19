@@ -36,8 +36,8 @@ INSTALLED_APPS = (
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.cache.UpdateCacheMiddleware',
-    'rmr.extensions.middleware.json.RequestDecoder',
     'django.middleware.cache.FetchFromCacheMiddleware',
+    'rmr.extensions.middleware.json.RequestDecoder',
 )
 
 ROOT_URLCONF = None

@@ -106,6 +106,8 @@ class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
         response = client.get(reverse('ok'))
         self.assertEqual(Json.http_code, response.status_code)
         self.assertNotIn('Expires', response)
+        self.assertIn('Content-Length', response)
+        self.assertEqual('14', response['Content-Length'])
         self.assertIn('max-age=0', response['Cache-Control'])
         self.assertIn('public', response['Cache-Control'])
         self.assertEqual('Thu, 01 Jan 2015 00:00:00 GMT', response['Last-Modified'])
@@ -113,6 +115,8 @@ class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
 
         response = client.post(reverse('ok'))
         self.assertEqual(Json.http_code, response.status_code)
+        self.assertIn('Content-Length', response)
+        self.assertEqual('14', response['Content-Length'])
         self.assertNotIn('Expires', response)
         self.assertNotIn('Cache-Control', response)
         self.assertNotIn('Last-Modified', response)
@@ -129,6 +133,8 @@ class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
             HTTP_IF_MODIFIED_SINCE='Thu, 01 Jan 2015 00:00:00 GMT',
         )
         self.assertEqual(Json.http_code, response.status_code)
+        self.assertIn('Content-Length', response)
+        self.assertEqual('14', response['Content-Length'])
 
     def test_cache_response(self):
         client = django.test.Client()
