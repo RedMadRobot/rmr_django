@@ -19,14 +19,14 @@ class HttpCacheHeaders(type):
 
     def expires(cls):
         """
-        Lazy evaluated value of cache TTL
+        Lazy evaluated value of cache TTL in seconds
         """
         return 0
 
     def cache_control(cls):
         return dict(
             public=True,
-            max_age=lazy(cls.expires)(),
+            max_age=lazy(cls.expires, int)(),
         )
 
     def last_modified(cls, request: HttpRequest, *args, **kwargs):
