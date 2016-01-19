@@ -18,6 +18,9 @@ class HttpCacheHeaders(type):
     dispatch_original = None
 
     def expires(cls):
+        """
+        Lazy evaluated value of cache TTL
+        """
         return 0
 
     def cache_control(cls):
