@@ -3,36 +3,42 @@ import logging
 
 from django.http import JsonResponse, HttpResponse, HttpRequest
 from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page, cache_control
+from django.views.decorators.cache import cache_control
 from django.views.decorators.http import last_modified
+from django.utils.functional import lazy
 from django.views.generic import View
 
 import rmr
+
+from rmr.utils.decorators import conditional
 
 
 class HttpCacheHeaders(type):
 
     dispatch_original = None
 
-    expires = -1  # expires immediately
+    def expires(cls):
+        return 0
 
-    cache_control = {
-        'public': True,
-    }
+    def cache_control(cls):
+        return dict(
+            public=True,
+            max_age=lazy(cls.expires)(),
+        )
 
     def last_modified(cls, request: HttpRequest, *args, **kwargs):
         pass
 
+    @staticmethod
+    def cache_headers_allowed(view, request, *args, **kwargs):
+        return request.method in ('GET', 'HEAD')
+
     def __init__(cls, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        cls.dispatch = cls.dispatch_original = cls.dispatch_original or cls.dispatch
-        cls.dispatch = method_decorator(last_modified(cls.__last_modified))(cls.dispatch)
-        cls.dispatch = method_decorator(cache_control(**cls.cache_control))(cls.dispatch)
-        cls.dispatch = method_decorator(cache_page(cls.expires))(cls.dispatch)
-
-    def __last_modified(cls, request: HttpRequest, *args, **kwargs):
-        if request.method in ('GET', 'HEAD'):
-            return cls.last_modified(request, *args, **kwargs)
+        dispatch = cls.dispatch_original = cls.dispatch_original or cls.dispatch
+        dispatch = method_decorator(last_modified(cls.last_modified))(dispatch)
+        dispatch = method_decorator(cache_control(**cls.cache_control()))(dispatch)
+        cls.dispatch = conditional(cls.cache_headers_allowed, dispatch)(cls.dispatch)
 
 
 class Json(View, metaclass=HttpCacheHeaders):

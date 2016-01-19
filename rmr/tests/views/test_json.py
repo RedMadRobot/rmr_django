@@ -13,7 +13,6 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 
 from rmr.errors import ClientError, ServerError
-from rmr.utils.cache import cache_timeout
 from rmr.utils.test import data_provider, DataSet, Parametrized
 from rmr.views import Json
 from rmr.views.decorators.validation import validate_request
@@ -46,9 +45,8 @@ class JsonWithoutError(Json):
 
 class CacheJson(Json):
 
-    @cache_timeout
-    @staticmethod
-    def expires():
+    @classmethod
+    def expires(cls):
         return 3600
 
     def get(self, request):
@@ -107,7 +105,7 @@ class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
         client = django.test.Client()
         response = client.get(reverse('ok'))
         self.assertEqual(Json.http_code, response.status_code)
-        self.assertIn('Expires', response)
+        self.assertNotIn('Expires', response)
         self.assertIn('max-age=0', response['Cache-Control'])
         self.assertIn('public', response['Cache-Control'])
         self.assertEqual('Thu, 01 Jan 2015 00:00:00 GMT', response['Last-Modified'])
@@ -116,9 +114,8 @@ class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
         response = client.post(reverse('ok'))
         self.assertEqual(Json.http_code, response.status_code)
         self.assertNotIn('Expires', response)
-        self.assertNotIn('max-age', response.get('Cache-Control', ''))
+        self.assertNotIn('Cache-Control', response)
         self.assertNotIn('Last-Modified', response)
-        # self.assertNotIn('Cache-Control', response)  # TODO
         self.assertEqual('application/json', response['Content-Type'])
 
         response = client.get(
@@ -137,6 +134,7 @@ class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
         client = django.test.Client()
         response = client.get(reverse('cache'))
         self.assertEqual(Json.http_code, response.status_code)
+        self.assertIn('Cache-Control', response)
         self.assertIn('max-age=3600', response['Cache-Control'])
         self.assertIn('Expires', response)
 
