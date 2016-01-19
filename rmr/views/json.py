@@ -5,6 +5,7 @@ from django.http import JsonResponse, HttpResponse, HttpRequest
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control
 from django.views.decorators.http import last_modified
+from django.utils.functional import lazy
 from django.views.generic import View
 
 import rmr
@@ -17,12 +18,12 @@ class HttpCacheHeaders(type):
     dispatch_original = None
 
     def expires(cls):
-        pass
+        return 0
 
     def cache_control(cls):
         return dict(
             public=True,
-            max_age=cls.expires() or 0,
+            max_age=lazy(cls.expires)(),
         )
 
     def last_modified(cls, request: HttpRequest, *args, **kwargs):

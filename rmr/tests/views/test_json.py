@@ -11,7 +11,6 @@ from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.utils.functional import lazy
 
 from rmr.errors import ClientError, ServerError
 from rmr.utils.test import data_provider, DataSet, Parametrized
@@ -47,7 +46,6 @@ class JsonWithoutError(Json):
 class CacheJson(Json):
 
     @classmethod
-    @lazy
     def expires(cls):
         return 3600
 
