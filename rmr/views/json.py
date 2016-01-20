@@ -19,14 +19,14 @@ class HttpCacheHeaders(type):
 
     def expires(cls):
         """
-        Lazy evaluated value of cache TTL
+        Lazy evaluated value of cache TTL in seconds
         """
         return 0
 
     def cache_control(cls):
         return dict(
             public=True,
-            max_age=lazy(cls.expires)(),
+            max_age=lazy(cls.expires, int)(),
         )
 
     def last_modified(cls, request: HttpRequest, *args, **kwargs):
@@ -95,7 +95,10 @@ class Json(View, metaclass=HttpCacheHeaders):
             ),
         )
 
-        return JsonResponse(api_result, status=http_code)
+        response = JsonResponse(api_result, status=http_code)
+        response['Content-Length'] = str(len(response.content))
+
+        return response
 
     @staticmethod
     def get_range(offset=None, limit=None, limit_default=None, limit_max=None):
