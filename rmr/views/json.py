@@ -18,7 +18,8 @@ class HttpCacheHeaders(type):
 
     dispatch_original = None
 
-    def expires(cls):
+    @staticmethod
+    def expires():
         """
         Lazy evaluated value of cache TTL in seconds
         """
