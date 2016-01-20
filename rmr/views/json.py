@@ -1,6 +1,7 @@
 import contextlib
 import logging
 
+from django.conf import settings
 from django.http import JsonResponse, HttpResponse, HttpRequest
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control
@@ -17,11 +18,12 @@ class HttpCacheHeaders(type):
 
     dispatch_original = None
 
-    def expires(cls):
+    @staticmethod
+    def expires():
         """
         Lazy evaluated value of cache TTL in seconds
         """
-        return 0
+        return settings.CACHE_MIDDLEWARE_SECONDS
 
     def cache_control(cls):
         return dict(
@@ -95,10 +97,7 @@ class Json(View, metaclass=HttpCacheHeaders):
             ),
         )
 
-        response = JsonResponse(api_result, status=http_code)
-        response['Content-Length'] = str(len(response.content))
-
-        return response
+        return JsonResponse(api_result, status=http_code)
 
     @staticmethod
     def get_range(offset=None, limit=None, limit_default=None, limit_max=None):
