@@ -148,14 +148,6 @@ class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
         self.assertEqual('14', response['Content-Length'])
         self.assertEqual('application/json', response['Content-Type'])
 
-    # def test_cache_response(self):
-    #     client = django.test.Client()
-    #     response = client.get(reverse('cache'))
-    #     self.assertEqual(Json.http_code, response.status_code)
-    #     self.assertIn('Cache-Control', response)
-    #     self.assertIn('max-age=3600', response['Cache-Control'])
-    #     self.assertIn('Expires', response)
-
     @data_provider(
         DataSet(
             offset=None,
