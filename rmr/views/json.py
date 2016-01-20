@@ -1,6 +1,7 @@
 import contextlib
 import logging
 
+from django.conf import settings
 from django.http import JsonResponse, HttpResponse, HttpRequest
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control
@@ -21,7 +22,7 @@ class HttpCacheHeaders(type):
         """
         Lazy evaluated value of cache TTL in seconds
         """
-        return 0
+        return settings.CACHE_MIDDLEWARE_SECONDS
 
     def cache_control(cls):
         return dict(

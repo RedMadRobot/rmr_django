@@ -27,6 +27,8 @@ DEBUG = False
 
 ALLOWED_HOSTS = []
 
+CACHE_MIDDLEWARE_SECONDS = 0
+
 
 # Application definition
 

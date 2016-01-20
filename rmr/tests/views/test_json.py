@@ -103,6 +103,8 @@ class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
 
     def test_response_headers(self):
         client = django.test.Client()
+
+        # GET request of cachable content
         response = client.get(reverse('cache'))
         self.assertEqual(Json.http_code, response.status_code)
         self.assertIn('Content-Length', response)
@@ -116,6 +118,7 @@ class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
         self.assertEqual('Thu, 01 Jan 2015 00:00:00 GMT', response['Last-Modified'])
         self.assertEqual('application/json', response['Content-Type'])
 
+        # POST request of cachable content
         response = client.post(reverse('cache'))
         self.assertEqual(Json.http_code, response.status_code)
         self.assertIn('Content-Length', response)
@@ -126,6 +129,7 @@ class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
         self.assertEqual('14', response['Content-Length'])
         self.assertEqual('application/json', response['Content-Type'])
 
+        # GET request of cachable content with If-Modified-Since provided
         response = client.get(
             reverse('cache'),
             HTTP_IF_MODIFIED_SINCE='Thu, 01 Jan 2015 00:00:00 GMT',
@@ -136,6 +140,7 @@ class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
         self.assertNotIn('Content-Type', response)
         self.assertEqual(304, response.status_code)
 
+        # POST request of cachable content with If-Modified-Since provided
         response = client.post(
             reverse('cache'),
             HTTP_IF_MODIFIED_SINCE='Thu, 01 Jan 2015 00:00:00 GMT',
@@ -145,6 +150,17 @@ class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
         self.assertNotIn('Expires', response)
         self.assertNotIn('Cache-Control', response)
         self.assertNotIn('Last-Modified', response)
+        self.assertEqual('14', response['Content-Length'])
+        self.assertEqual('application/json', response['Content-Type'])
+
+        # GET request of non-cachable content
+        response = client.get(reverse('ok'))
+        self.assertIn('Cache-Control', response)
+        self.assertIn('Content-Length', response)
+        self.assertIn('Content-Type', response)
+        self.assertNotIn('Expires', response)
+        self.assertNotIn('Last-Modified', response)
+        self.assertIn('max-age=0', response['Cache-Control'])
         self.assertEqual('14', response['Content-Length'])
         self.assertEqual('application/json', response['Content-Type'])
 
