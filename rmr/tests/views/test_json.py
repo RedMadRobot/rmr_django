@@ -32,24 +32,24 @@ class JsonWithError(Json):
 
 class JsonWithoutError(Json):
 
-    @staticmethod
-    def last_modified(request, *args, **kwargs):
-        return datetime(2015, 1, 1, tzinfo=timezone.utc)
-
     def get(self, request):
-        pass
-
-    def post(self, request):
         pass
 
 
 class CacheJson(Json):
+
+    @staticmethod
+    def last_modified(request, *args, **kwargs):
+        return datetime(2015, 1, 1, tzinfo=timezone.utc)
 
     @classmethod
     def expires(cls):
         return 3600
 
     def get(self, request):
+        pass
+
+    def post(self, request):
         pass
 
 
@@ -101,48 +101,60 @@ class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
         response = client.get(reverse(url_name))
         self.assertEqual(expected_status_code, response.status_code)
 
-    def test_http_headers(self):
+    def test_response_headers(self):
         client = django.test.Client()
-        response = client.get(reverse('ok'))
+        response = client.get(reverse('cache'))
         self.assertEqual(Json.http_code, response.status_code)
-        self.assertNotIn('Expires', response)
         self.assertIn('Content-Length', response)
+        self.assertIn('Content-Type', response)
+        self.assertIn('Cache-Control', response)
+        self.assertIn('Expires', response)
+        self.assertIn('Last-Modified', response)
         self.assertEqual('14', response['Content-Length'])
-        self.assertIn('max-age=0', response['Cache-Control'])
+        self.assertIn('max-age=3600', response['Cache-Control'])
         self.assertIn('public', response['Cache-Control'])
         self.assertEqual('Thu, 01 Jan 2015 00:00:00 GMT', response['Last-Modified'])
         self.assertEqual('application/json', response['Content-Type'])
 
-        response = client.post(reverse('ok'))
+        response = client.post(reverse('cache'))
         self.assertEqual(Json.http_code, response.status_code)
         self.assertIn('Content-Length', response)
-        self.assertEqual('14', response['Content-Length'])
+        self.assertIn('Content-Type', response)
         self.assertNotIn('Expires', response)
         self.assertNotIn('Cache-Control', response)
         self.assertNotIn('Last-Modified', response)
+        self.assertEqual('14', response['Content-Length'])
         self.assertEqual('application/json', response['Content-Type'])
 
         response = client.get(
-            reverse('ok'),
+            reverse('cache'),
             HTTP_IF_MODIFIED_SINCE='Thu, 01 Jan 2015 00:00:00 GMT',
         )
+        self.assertNotIn('Expires', response)
+        self.assertNotIn('Cache-Control', response)
+        self.assertNotIn('Last-Modified', response)
+        self.assertNotIn('Content-Type', response)
         self.assertEqual(304, response.status_code)
 
         response = client.post(
-            reverse('ok'),
+            reverse('cache'),
             HTTP_IF_MODIFIED_SINCE='Thu, 01 Jan 2015 00:00:00 GMT',
         )
         self.assertEqual(Json.http_code, response.status_code)
         self.assertIn('Content-Length', response)
+        self.assertNotIn('Expires', response)
+        self.assertNotIn('Cache-Control', response)
+        self.assertNotIn('Last-Modified', response)
         self.assertEqual('14', response['Content-Length'])
+        self.assertEqual('application/json', response['Content-Type'])
 
-    def test_cache_response(self):
-        client = django.test.Client()
-        response = client.get(reverse('cache'))
-        self.assertEqual(Json.http_code, response.status_code)
-        self.assertIn('Cache-Control', response)
-        self.assertIn('max-age=3600', response['Cache-Control'])
-        self.assertIn('Expires', response)
+    # def test_cache_response(self):
+    #     client = django.test.Client()
+    #     response = client.get(reverse('cache'))
+    #     self.assertEqual(Json.http_code, response.status_code)
+    #     self.assertIn('Cache-Control', response)
+    #     self.assertIn('max-age=3600', response['Cache-Control'])
+    #     self.assertIn('Expires', response)
 
     @data_provider(
         DataSet(

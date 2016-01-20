@@ -95,10 +95,7 @@ class Json(View, metaclass=HttpCacheHeaders):
             ),
         )
 
-        response = JsonResponse(api_result, status=http_code)
-        response['Content-Length'] = str(len(response.content))
-
-        return response
+        return JsonResponse(api_result, status=http_code)
 
     @staticmethod
     def get_range(offset=None, limit=None, limit_default=None, limit_max=None):
