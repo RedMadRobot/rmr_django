@@ -53,6 +53,8 @@ class Json(View, metaclass=HttpCacheHeaders):
 
     http_code = 200
 
+    logger = logging.getLogger('rmr.view')
+
     def __init__(self, request: HttpRequest=None, **kwargs):
         super().__init__(**kwargs)
         self.request = request
