@@ -51,7 +51,12 @@ class Json(View, metaclass=HttpCacheHeaders):
 
     logger = logging.getLogger('rmr.request')
 
+    def __init__(self, request: HttpRequest=None, **kwargs):
+        super().__init__(**kwargs)
+        self.request = request
+
     def dispatch(self, request: HttpRequest, *args, **kwargs):
+        self.request = request
         http_code = self.http_code
         try:
             result = super().dispatch(request, *args, **kwargs)

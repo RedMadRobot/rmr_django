@@ -1,10 +1,14 @@
 Changelog
 =========
 
+Release 1.0.22
+--------------
+
+- Enhancement: Added 'request' instance property to the :code:`rmr.views.Json`
+
 Release 1.0.21
 --------------
 
-- Enhancement: Added 'Content-Length' setting on :code:`rmr.views.Json` responses
 - Enhancement: Added HTTP-caching headers management to the :code:`rmr.views.Json`
 - Enhancement: Moved :code:`validate_request` decorator to :code:`rmr.views.decorators.validation` module
 - Enhancement: Removed :code:`rmr.views.Json.get_device_id()` method
