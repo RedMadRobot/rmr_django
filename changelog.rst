@@ -5,6 +5,7 @@ Release 1.0.22
 --------------
 
 - Enhancement: Added 'request' instance property to the :code:`rmr.views.Json`
+- Enhancement: :code:`rmr.views.decorators.validate.validate_request()` replaces request's GET and POST by validated ones
 
 Release 1.0.21
 --------------

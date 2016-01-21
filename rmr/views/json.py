@@ -13,6 +13,10 @@ import rmr
 
 from rmr.utils.decorators import conditional
 
+request_logger = logging.getLogger('rmr.request')
+
+response_logger = logging.getLogger('rmr.response')
+
 
 class HttpCacheHeaders(type):
 
@@ -49,32 +53,44 @@ class Json(View, metaclass=HttpCacheHeaders):
 
     http_code = 200
 
-    logger = logging.getLogger('rmr.request')
-
     def __init__(self, request: HttpRequest=None, **kwargs):
         super().__init__(**kwargs)
         self.request = request
 
     def dispatch(self, request: HttpRequest, *args, **kwargs):
+        request_logger.debug(
+            'request_method: %(request_method)s, '
+            'request_path: %(request_path)s, '
+            'request_headers: %(request_headers)s, '
+            'request_params: %(request_params)s, '
+            'request_data: %(request_data)s, ',
+            dict(
+                request_method=request.method,
+                request_path=request.path,
+                request_headers=request.META,
+                request_params=request.GET,
+                request_data=request.POST,
+            ),
+        )
+
         self.request = request
-        http_code = self.http_code
         try:
             result = super().dispatch(request, *args, **kwargs)
             if isinstance(result, HttpResponse):
                 return result
+            http_code = self.http_code
             api_result = dict(
                 data=result,
             )
         except rmr.Error as error:
 
-            self.logger.log(
+            response_logger.log(
                 error.level,
                 '%(code)s: %(message)s',
                 dict(message=error.message, code=error.code),
             )
 
             http_code = error.http_code
-
             api_result = dict(
                 error=dict(
                     code=error.code,
@@ -82,20 +98,10 @@ class Json(View, metaclass=HttpCacheHeaders):
                 ),
             )
 
-        self.logger.debug(
-            'request_method: %(request_method)s, '
-            'request_path: %(request_path)s, '
-            'request_headers: %(request_headers)s, '
-            'request_params: %(request_params)s, '
-            'request_data: %(request_data)s, '
+        response_logger.debug(
             'response_code: %(response_code)s, '
             'response_data: %(response_data)s',
             dict(
-                request_method=request.method,
-                request_path=request.path,
-                request_headers=request.META,
-                request_params=request.GET,
-                request_data=request.POST,
                 response_code=http_code,
                 response_data=api_result,
             ),
