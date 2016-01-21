@@ -27,7 +27,6 @@ class HttpCacheHeaders(type):
 
     def cache_control(cls):
         return dict(
-            public=True,
             max_age=lazy(cls.expires, int)(),
         )
 

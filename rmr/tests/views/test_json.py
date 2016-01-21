@@ -114,7 +114,6 @@ class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
         self.assertIn('Last-Modified', response)
         self.assertEqual('14', response['Content-Length'])
         self.assertIn('max-age=3600', response['Cache-Control'])
-        self.assertIn('public', response['Cache-Control'])
         self.assertEqual('Thu, 01 Jan 2015 00:00:00 GMT', response['Last-Modified'])
         self.assertEqual('application/json', response['Content-Type'])
 
