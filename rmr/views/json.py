@@ -64,13 +64,6 @@ class Json(View, metaclass=HttpCacheHeaders):
         return type(cls).expires()
 
     @classmethod
-    def cache_control(cls):
-        """
-        Returns params of Cache-Control header as mapping
-        """
-        return type(cls).cache_control(cls)
-
-    @classmethod
     def last_modified(cls, request: HttpRequest, *args, **kwargs):
         """
         Lazy evaluated value of Last-Modified header
