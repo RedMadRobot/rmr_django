@@ -24,9 +24,6 @@ class HttpCacheHeaders(type):
 
     @staticmethod
     def expires():
-        """
-        Lazy evaluated value of cache TTL in seconds
-        """
         return settings.CACHE_MIDDLEWARE_SECONDS
 
     def cache_control(cls):
@@ -58,6 +55,27 @@ class Json(View, metaclass=HttpCacheHeaders):
     def __init__(self, request: HttpRequest=None, **kwargs):
         super().__init__(**kwargs)
         self.request = request
+
+    @classmethod
+    def expires(cls):
+        """
+        Lazy evaluated value of cache TTL in seconds
+        """
+        return type(cls).expires()
+
+    @classmethod
+    def cache_control(cls):
+        """
+        Returns params of Cache-Control header as mapping
+        """
+        return type(cls).cache_control(cls)
+
+    @classmethod
+    def last_modified(cls, request: HttpRequest, *args, **kwargs):
+        """
+        Lazy evaluated value of Last-Modified header
+        """
+        return type(cls).last_modified(cls, request, *args, **kwargs)
 
     def dispatch(self, request: HttpRequest, *args, **kwargs):
         request_logger.debug(
