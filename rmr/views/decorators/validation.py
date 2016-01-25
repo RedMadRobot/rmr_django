@@ -16,13 +16,8 @@ def validate_request(*, get=forms.Form, post=forms.Form):
                     code='validation_error',
                     message=dict(form_post.errors, **form_get.errors),
                 )
-            data_get = http.QueryDict(mutable=True)
-            data_post = http.QueryDict(mutable=True)
-            data_get.update(form_get.cleaned_data)
-            data_post.update(form_post.cleaned_data)
-            data_get._mutable = data_post._mutable = False
-            request.GET = data_get
-            request.POST = data_post
+            request.GET = form_get.cleaned_data
+            request.POST = form_post.cleaned_data
             return view(request, *args, **kwargs)
         return _view
     return _decorator
