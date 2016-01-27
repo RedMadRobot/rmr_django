@@ -1,3 +1,9 @@
+"""
+Range fields placed here are actual only for Django <= 1.8
+
+Django 1.9 already has 'upper' and 'lower' lookups for the range fields
+"""
+
 from django.contrib.postgres import fields
 from django.db import models
 
