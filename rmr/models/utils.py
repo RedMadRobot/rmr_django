@@ -2,6 +2,19 @@ from collections import defaultdict
 
 
 class BulkModelCreator:
+    """
+    BulkModelCreator accumulates instances of any Django models and saves them into the db (using bulk_create)
+    when count of particular model instances reaches 'batch_size' parameter.
+    On exit from context manager will create all instances, that left in collection.
+
+    Example:
+
+    with BulkModelCreator(100) as creator:
+        for row in csv_reader.read():
+            instance = get_instance(row)
+            creator.add(instance)
+
+    """
 
     def __init__(self, batch_size=300):
         self.batches = defaultdict(list)
