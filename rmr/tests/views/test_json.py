@@ -104,6 +104,15 @@ class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
     def test_response_headers(self):
         client = django.test.Client()
 
+        # GET request of not cached content with If-Modified-Since provided
+        response = client.get(
+            reverse('cache'),
+            HTTP_IF_MODIFIED_SINCE='Thu, 01 Jan 2015 00:00:00 GMT',
+        )
+        self.assertIn('Content-Length', response)
+        self.assertEqual('0', response['Content-Length'])
+        self.assertEqual(304, response.status_code)
+
         # GET request of cachable content
         response = client.get(reverse('cache'))
         self.assertEqual(Json.http_code, response.status_code)
@@ -128,15 +137,13 @@ class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
         self.assertEqual('14', response['Content-Length'])
         self.assertEqual('application/json', response['Content-Type'])
 
-        # GET request of cachable content with If-Modified-Since provided
+        # GET request of cached content with If-Modified-Since provided
         response = client.get(
             reverse('cache'),
             HTTP_IF_MODIFIED_SINCE='Thu, 01 Jan 2015 00:00:00 GMT',
         )
-        self.assertNotIn('Expires', response)
-        self.assertNotIn('Cache-Control', response)
-        self.assertNotIn('Last-Modified', response)
-        self.assertNotIn('Content-Type', response)
+        self.assertIn('Content-Length', response)
+        self.assertEqual('0', response['Content-Length'])
         self.assertEqual(304, response.status_code)
 
         # POST request of cachable content with If-Modified-Since provided
