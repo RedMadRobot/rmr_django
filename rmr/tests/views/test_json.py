@@ -289,6 +289,13 @@ class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
             limit_max=10,
             expected_error_code='max_limit_exceeded',
         ),
+        DataSet(
+            offset=None,
+            limit=None,
+            limit_default=None,
+            limit_max=10,
+            expected_error_code='limit_not_provided',
+        ),
     )
     def test_get_range_errors(self, offset, limit, limit_default, limit_max, expected_error_code):
         with self.assertRaises(ClientError) as error:
