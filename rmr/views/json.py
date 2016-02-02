@@ -124,6 +124,7 @@ class Json(View, metaclass=HttpCacheHeaders):
 
     @staticmethod
     def get_range(offset=None, limit=None, limit_default=None, limit_max=None):
+        # TODO make another method with offset/limit validation delegated to rmr.forms.OffsetLimit
         start = 0
         stop = None
         with contextlib.suppress(ValueError):
