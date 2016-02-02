@@ -147,6 +147,11 @@ class Json(View, metaclass=HttpCacheHeaders):
                         code='max_limit_exceeded',
                     )
                 stop = start + limit
+            elif limit_max:
+                raise rmr.ClientError(
+                    'Limit must be provided',
+                    code='limit_not_provided',
+                )
 
             return start, stop
 
