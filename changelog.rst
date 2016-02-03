@@ -1,6 +1,13 @@
 Changelog
 =========
 
+Release 1.0.23
+--------------
+
+- Enhancement: Added :code:`rmr.utils.iterate.consume()`
+- Enhancement: Added base :code:`rmr.forms.OffsetLimit` validation form
+- Fix: :code:`Json.get_range()` raises an error when set 'limit_max' and 'limit' is not provided
+
 Release 1.0.22
 --------------
 
