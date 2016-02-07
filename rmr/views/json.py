@@ -111,16 +111,20 @@ class Json(View, metaclass=HttpCacheHeaders):
                 ),
             )
 
+        response = JsonResponse(api_result, status=http_code)
+
         response_logger.debug(
             'response_code: %(response_code)s, '
+            'response_headers: %(response_headers)s, '
             'response_data: %(response_data)s',
             dict(
-                response_code=http_code,
-                response_data=api_result,
+                response_code=response.status_code,
+                response_headers=response.items(),
+                response_data=response.content,
             ),
         )
 
-        return JsonResponse(api_result, status=http_code)
+        return response
 
     @staticmethod
     def get_range(offset=None, limit=None, limit_default=None, limit_max=None):
