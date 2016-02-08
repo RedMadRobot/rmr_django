@@ -45,8 +45,8 @@ class Json(View):
             max_age=lazy(cls.expires, int)(),
         )
 
-    @staticmethod
-    def cache_headers_allowed(request, *args, **kwargs):
+    @classmethod
+    def cache_headers_allowed(cls, request, *args, **kwargs):
         return request.method in ('GET', 'HEAD')
 
     @classonlymethod
