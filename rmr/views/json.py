@@ -18,35 +18,7 @@ request_logger = logging.getLogger('rmr.request')
 response_logger = logging.getLogger('rmr.response')
 
 
-class HttpCacheHeaders(type):
-
-    dispatch_original = None
-
-    @staticmethod
-    def expires():
-        return settings.CACHE_MIDDLEWARE_SECONDS
-
-    def cache_control(cls):
-        return dict(
-            max_age=lazy(cls.expires, int)(),
-        )
-
-    def last_modified(cls, request: HttpRequest, *args, **kwargs):
-        pass
-
-    @staticmethod
-    def cache_headers_allowed(view, request, *args, **kwargs):
-        return request.method in ('GET', 'HEAD')
-
-    def __init__(cls, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        dispatch = cls.dispatch_original = cls.dispatch_original or cls.dispatch
-        dispatch = method_decorator(last_modified(cls.last_modified))(dispatch)
-        dispatch = method_decorator(cache_control(**cls.cache_control()))(dispatch)
-        cls.dispatch = conditional(cls.cache_headers_allowed, dispatch)(cls.dispatch)
-
-
-class Json(View, metaclass=HttpCacheHeaders):
+class Json(View):
 
     http_code = 200
 
@@ -56,23 +28,36 @@ class Json(View, metaclass=HttpCacheHeaders):
         super().__init__(**kwargs)
         self.request = request
 
-    @classonlymethod
+    @classmethod
     def expires(cls):
-        """
-        Lazy evaluated value of cache TTL in seconds
-        """
-        return type(cls).expires()
+        return settings.CACHE_MIDDLEWARE_SECONDS
 
-    @classonlymethod
-    def last_modified(cls, request: HttpRequest, *args, **kwargs):
+    @classmethod
+    def last_modified(cls, request, *args, **kwargs):
         """
         Lazy evaluated value of Last-Modified header
         """
-        return type(cls).last_modified(cls, request, *args, **kwargs)
+        pass
+
+    @classmethod
+    def cache_control(cls):
+        return dict(
+            max_age=lazy(cls.expires, int)(),
+        )
+
+    @staticmethod
+    def cache_headers_allowed(request, *args, **kwargs):
+        return request.method in ('GET', 'HEAD')
 
     @classonlymethod
     def as_view(cls, **initkwargs):
-        def view(request, *args, **kwargs):
+        view = patched_view = super().as_view(**initkwargs)
+        patched_view = last_modified(cls.last_modified)(patched_view)
+        patched_view = cache_control(**cls.cache_control())(patched_view)
+        view = conditional(cls.cache_headers_allowed, patched_view)(view)
+
+        def logging_view(request, *args, **kwargs):
+
             request_logger.debug(
                 'request_method: %(request_method)s, '
                 'request_path: %(request_path)s, '
@@ -88,7 +73,7 @@ class Json(View, metaclass=HttpCacheHeaders):
                 ),
             )
 
-            response = original_view(request, *args, **kwargs)
+            response = view(request, *args, **kwargs)
 
             response_logger.debug(
                 'response_code: %(response_code)s, '
@@ -103,9 +88,7 @@ class Json(View, metaclass=HttpCacheHeaders):
 
             return response
 
-        original_view = super().as_view(**initkwargs)
-
-        return view
+        return logging_view
 
     def dispatch(self, request: HttpRequest, *args, **kwargs):
         self.request = request
