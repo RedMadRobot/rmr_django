@@ -3,7 +3,7 @@ import logging
 
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse, HttpRequest
-from django.utils.decorators import method_decorator, classonlymethod
+from django.utils.decorators import classonlymethod
 from django.views.decorators.cache import cache_control
 from django.views.decorators.http import last_modified
 from django.utils.functional import lazy
