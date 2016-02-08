@@ -3,7 +3,7 @@ import logging
 
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse, HttpRequest
-from django.utils.decorators import method_decorator
+from django.utils.decorators import method_decorator, classonlymethod
 from django.views.decorators.cache import cache_control
 from django.views.decorators.http import last_modified
 from django.utils.functional import lazy
@@ -56,36 +56,58 @@ class Json(View, metaclass=HttpCacheHeaders):
         super().__init__(**kwargs)
         self.request = request
 
-    @classmethod
+    @classonlymethod
     def expires(cls):
         """
         Lazy evaluated value of cache TTL in seconds
         """
         return type(cls).expires()
 
-    @classmethod
+    @classonlymethod
     def last_modified(cls, request: HttpRequest, *args, **kwargs):
         """
         Lazy evaluated value of Last-Modified header
         """
         return type(cls).last_modified(cls, request, *args, **kwargs)
 
-    def dispatch(self, request: HttpRequest, *args, **kwargs):
-        request_logger.debug(
-            'request_method: %(request_method)s, '
-            'request_path: %(request_path)s, '
-            'request_headers: %(request_headers)s, '
-            'request_params: %(request_params)s, '
-            'request_data: %(request_data)s, ',
-            dict(
-                request_method=request.method,
-                request_path=request.path,
-                request_headers=request.META,
-                request_params=request.GET,
-                request_data=request.POST,
-            ),
-        )
+    @classonlymethod
+    def as_view(cls, **initkwargs):
+        def view(request, *args, **kwargs):
+            request_logger.debug(
+                'request_method: %(request_method)s, '
+                'request_path: %(request_path)s, '
+                'request_headers: %(request_headers)s, '
+                'request_params: %(request_params)s, '
+                'request_data: %(request_data)s, ',
+                dict(
+                    request_method=request.method,
+                    request_path=request.path,
+                    request_headers=request.META,
+                    request_params=request.GET,
+                    request_data=request.POST,
+                ),
+            )
 
+            response = original_view(request, *args, **kwargs)
+
+            response_logger.debug(
+                'response_code: %(response_code)s, '
+                'response_headers: %(response_headers)s, '
+                'response_data: %(response_data)s',
+                dict(
+                    response_code=response.status_code,
+                    response_headers=response.items(),
+                    response_data=response.content,
+                ),
+            )
+
+            return response
+
+        original_view = super().as_view(**initkwargs)
+
+        return view
+
+    def dispatch(self, request: HttpRequest, *args, **kwargs):
         self.request = request
         try:
             result = super().dispatch(request, *args, **kwargs)
@@ -111,20 +133,7 @@ class Json(View, metaclass=HttpCacheHeaders):
                 ),
             )
 
-        response = JsonResponse(api_result, status=http_code)
-
-        response_logger.debug(
-            'response_code: %(response_code)s, '
-            'response_headers: %(response_headers)s, '
-            'response_data: %(response_data)s',
-            dict(
-                response_code=response.status_code,
-                response_headers=response.items(),
-                response_data=response.content,
-            ),
-        )
-
-        return response
+        return JsonResponse(api_result, status=http_code)
 
     @staticmethod
     def get_range(offset=None, limit=None, limit_default=None, limit_max=None):
