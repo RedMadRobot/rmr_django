@@ -19,6 +19,9 @@ Vagrant.configure("2") do |config|
             app.vm.network "forwarded_port", host: host, guest: guest
         end
 
+        # install Docker
+        app.vm.provision "docker"
+
     end
 
     config.vm.define "db" do |app|
