@@ -19,6 +19,8 @@ Vagrant.configure("2") do |config|
             app.vm.network "forwarded_port", host: host, guest: guest
         end
 
+        app.vm.synced_folder "data", "/data"
+
         # build Docker images
         app.vm.provision "docker" do |docker|
             docker.pull_images "redmadrobot/postgres:9.4"
