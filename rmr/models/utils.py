@@ -40,5 +40,5 @@ class BulkModelCreator:
     def __enter__(self):
         return self
 
-    def __exit__(self, type, value, traceback):
-        not type and self.flush_all()
+    def __exit__(self, exc_type, exc_value, traceback):
+        not exc_type and self.flush_all()
