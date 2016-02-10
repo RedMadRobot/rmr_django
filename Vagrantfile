@@ -12,7 +12,8 @@ Vagrant.configure("2") do |config|
 
         # Publish application ports
         {
-            5432 => 5432,    # PostgreSQL
+            5432 => 5432,    # PostgreSQL 9.4
+            5433 => 5433,    # PostgreSQL 9.5
             5672 => 5672,    # RabbitMQ
             15672 => 15672,  # RabbitMQ management
         }.each do |host, guest|
@@ -20,15 +21,18 @@ Vagrant.configure("2") do |config|
         end
 
         # install Docker
-        app.vm.provision "docker"
+        app.vm.provision "docker" do |docker|
+            docker.build_image "/vagrant/postgres/9.4", args: "--tag=redmadrobot/postgres:9.4"
+            docker.build_image "/vagrant/postgres/9.5", args: "--tag=redmadrobot/postgres:9.5"
+        end
 
     end
 
-    config.vm.define "postgres" do |app|
+    config.vm.define "postgres-9.4" do |app|
 
         # http://docs.vagrantup.com/v2/docker/configuration.html
         app.vm.provider "docker" do |container|
-            container.name = "postgres"
+            container.name = "postgres-9.4"
             container.force_host_vm = true
             container.image = "redmadrobot/postgres:9.4"
             container.ports = [
@@ -37,10 +41,32 @@ Vagrant.configure("2") do |config|
             container.vagrant_machine = "docker"
             container.vagrant_vagrantfile = __FILE__
             container.volumes = [
-                "/data:/data",
+                "/data/postgres:/data/postgres",
             ]
             container.env = {
-                PGDATA: "/data/postgres",
+                PGDATA: "/data/postgres/9.4",
+            }
+        end
+
+    end
+
+    config.vm.define "postgres-9.5" do |app|
+
+        # http://docs.vagrantup.com/v2/docker/configuration.html
+        app.vm.provider "docker" do |container|
+            container.name = "postgres-9.5"
+            container.force_host_vm = true
+            container.image = "redmadrobot/postgres:9.5"
+            container.ports = [
+                "5433:5432",
+            ]
+            container.vagrant_machine = "docker"
+            container.vagrant_vagrantfile = __FILE__
+            container.volumes = [
+                "/data/postgres:/data/postgres",
+            ]
+            container.env = {
+                PGDATA: "/data/postgres/9.5",
             }
         end
 
@@ -60,7 +86,7 @@ Vagrant.configure("2") do |config|
             container.vagrant_machine = "docker"
             container.vagrant_vagrantfile = __FILE__
             container.volumes = [
-                "/data:/var/lib",
+                "/data/rabbitmq:/var/lib/rabbitmq",
             ]
             container.env = {
                 RABBITMQ_DEFAULT_USER: "rabbitmq",
