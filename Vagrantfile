@@ -22,8 +22,8 @@ Vagrant.configure("2") do |config|
 
         # build Docker images
         app.vm.provision "docker" do |docker|
-            docker.build_image "/vagrant/postgres/9.4", args: "--tag=redmadrobot/postgres:9.4"
-            docker.build_image "/vagrant/postgres/9.5", args: "--tag=redmadrobot/postgres:9.5"
+            docker.build_image "/vagrant/etc/postgres/9.4", args: "--tag=redmadrobot/postgres:9.4"
+            docker.build_image "/vagrant/etc/postgres/9.5", args: "--tag=redmadrobot/postgres:9.5"
         end
 
         # remove obsolete Docker images
