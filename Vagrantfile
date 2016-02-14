@@ -20,11 +20,15 @@ Vagrant.configure("2") do |config|
             app.vm.network "forwarded_port", host: host, guest: guest
         end
 
-        # install Docker
+        # build Docker images
         app.vm.provision "docker" do |docker|
             docker.build_image "/vagrant/postgres/9.4", args: "--tag=redmadrobot/postgres:9.4"
             docker.build_image "/vagrant/postgres/9.5", args: "--tag=redmadrobot/postgres:9.5"
         end
+
+        # remove obsolete Docker images
+        app.vm.provision "shell",
+            inline: "docker images | sed 1d | grep '<none>' | awk '{print($3)}' | uniq | xargs docker rmi || true"
 
     end
 
