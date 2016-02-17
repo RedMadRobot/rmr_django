@@ -1,6 +1,12 @@
 Changelog
 =========
 
+Release 1.0.24
+--------------
+
+- Enhancement: Added :code:`rmr.extensions.middleware.cache.FixCacheControlMaxAge`
+- Enhancement: Added :code:`rmr.models.utils.BulkModelCreator`
+
 Release 1.0.23
 --------------
 
