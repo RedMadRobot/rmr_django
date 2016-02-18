@@ -4,6 +4,15 @@ from django.utils.timezone import now
 
 
 class FixCacheControlMaxAge:
+    """
+    Replaces 'max-age' value of 'Cache-Control' header by value calculated
+    from 'Expires' header's date
+
+    Must be placed before Django's 'FetchFromCacheMiddleware' due to fact
+    that the last one gets 'Cache-Control' header from the cache where
+    it's value corresponds to the moment original response was generated
+    and that's why maybe incorrect for the current time
+    """
 
     @staticmethod
     def process_response(request, response):
