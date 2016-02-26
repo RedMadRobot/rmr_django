@@ -4,6 +4,8 @@ Vagrant.configure("2") do |config|
 
         app.vm.box = "ubuntu/trusty64"
 
+        app.vm.box_check_update = false
+
         app.vm.provider "virtualbox" do |vm|
             vm.memory = 1024
             vm.cpus = 2
