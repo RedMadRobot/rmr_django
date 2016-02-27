@@ -69,3 +69,22 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+
+# Logging
+# https://docs.djangoproject.com/en/1.8/ref/settings/#id11
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'null': {
+            'class': 'logging.NullHandler',
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['null'],
+        },
+    },
+}
