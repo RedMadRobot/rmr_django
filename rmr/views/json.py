@@ -1,4 +1,5 @@
 import contextlib
+import functools
 import logging
 
 from django.conf import settings
@@ -11,6 +12,7 @@ from django.views.generic import View
 
 import rmr
 
+from rmr.utils.cache import cache_page
 from rmr.utils.decorators import conditional
 
 request_logger = logging.getLogger('rmr.request')
@@ -30,6 +32,9 @@ class Json(View):
 
     @classmethod
     def expires(cls):
+        """
+        Lazy evaluated 'max-age' value of Cache-Control header
+        """
         return settings.CACHE_MIDDLEWARE_SECONDS
 
     @classmethod
@@ -52,10 +57,16 @@ class Json(View):
     @classonlymethod
     def as_view(cls, **initkwargs):
         view = patched_view = super().as_view(**initkwargs)
-        patched_view = last_modified(cls.last_modified)(patched_view)
+        last_modified_evaluator = functools.lru_cache()(cls.last_modified)
+        patched_view = last_modified(last_modified_evaluator)(patched_view)
         patched_view = cache_control(**cls.cache_control())(patched_view)
+        patched_view = cache_page(
+            None,  # will be used value of Cache-Control.max-age or default one
+            key_prefix=last_modified_evaluator,
+        )(patched_view)
         view = conditional(cls.cache_headers_allowed, patched_view)(view)
 
+        @functools.wraps(cls.as_view)
         def logging_view(request, *args, **kwargs):
 
             request_logger.debug(
