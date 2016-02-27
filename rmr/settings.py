@@ -37,10 +37,8 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.http.ConditionalGetMiddleware',
     'rmr.extensions.middleware.json.RequestDecoder',
-    'django.middleware.cache.FetchFromCacheMiddleware',
 )
 
 ROOT_URLCONF = None
@@ -69,3 +67,27 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+
+# Logging
+# https://docs.djangoproject.com/en/1.8/ref/settings/#id11
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'null': {
+            'class': 'logging.NullHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['null'],
+            'level': 'ERROR',
+        },
+        'rmr': {
+            'handlers': ['null'],
+            'level': 'ERROR',
+        },
+    },
+}

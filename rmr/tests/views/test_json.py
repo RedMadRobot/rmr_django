@@ -2,6 +2,7 @@ import json
 import urllib.parse
 
 from datetime import datetime
+from unittest import mock
 
 import django.test
 
@@ -38,8 +39,12 @@ class JsonWithoutError(Json):
 
 class CacheJson(Json):
 
-    @staticmethod
-    def last_modified(request, *args, **kwargs):
+    timestamp = None
+
+    @classmethod
+    def last_modified(cls, request, *args, **kwargs):
+        if cls.timestamp:
+            return datetime.fromtimestamp(cls.timestamp)
         return datetime(2015, 1, 1, tzinfo=timezone.utc)
 
     @classmethod
@@ -83,13 +88,56 @@ urlpatterns = [
     url(r'warning', JsonWithWarning.as_view(), name='warning'),
     url(r'error', JsonWithError.as_view(), name='error'),
     url(r'ok', JsonWithoutError.as_view(), name='ok'),
-    url(r'validate', ValidationJson.as_view(), name='validate'),
     url(r'cache', CacheJson.as_view(), name='cache'),
+    url(r'validate', ValidationJson.as_view(), name='validate'),
 ]
 
 
 @override_settings(ROOT_URLCONF=__name__)
 class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
+
+    @data_provider(
+        DataSet(
+            timestamp1=None,
+            timestamp2=None,
+            cache_stale_expected=False,
+        ),
+        DataSet(
+            timestamp1=1420070400,
+            timestamp2=1420070401,
+            cache_stale_expected=True,
+        ),
+    )
+    def test_last_modified_as_cache_key(self, timestamp1, timestamp2, cache_stale_expected):
+        client = django.test.Client()
+
+        mocked_get = mock.MagicMock(return_value=None)
+        with mock.patch.multiple(CacheJson, timestamp=timestamp1, get=mocked_get):
+            client.get(
+                reverse('cache'),
+            )
+            self.assertTrue(mocked_get.called)
+
+        mocked_get = mock.MagicMock(return_value=None)
+        with mock.patch.multiple(CacheJson, timestamp=timestamp1, get=mocked_get):
+            client.get(
+                reverse('cache'),
+            )
+            self.assertFalse(mocked_get.called)
+
+        mocked_get = mock.MagicMock(return_value=None)
+        with mock.patch.multiple(CacheJson, timestamp=timestamp2, get=mocked_get):
+            client.get(
+                reverse('cache'),
+            )
+            self.assertEqual(cache_stale_expected, mocked_get.called)
+
+        mocked_get = mock.MagicMock(return_value=None)
+        with mock.patch.multiple(CacheJson, timestamp=timestamp2, get=mocked_get):
+            client.get(
+                reverse('cache'),
+            )
+            self.assertFalse(mocked_get.called)
 
     @data_provider(
         DataSet('warning', ClientError.http_code),
