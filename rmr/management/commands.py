@@ -12,7 +12,7 @@ class BaseCommand(DjangoBaseCommand):
 
     @property
     def logger_name(self):
-        return self.__class__.__module__.rpartition('.')[2]
+        return self.__class__.__module__.rsplit('.', 1)[-1]
 
     @staticmethod
     def get_logger_level(verbosity):
