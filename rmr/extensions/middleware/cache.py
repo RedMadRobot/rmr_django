@@ -1,3 +1,5 @@
+import functools
+
 from django.middleware import cache
 from django.utils.cache import patch_cache_control
 from django.utils.http import parse_http_date
@@ -17,19 +19,22 @@ class CacheMiddleware(cache.CacheMiddleware):
     def key_function(self, request, *args, **kwargs):
         return self.key_prefix
 
-    def patch_key_prefix(self, request):
-        self.key_prefix = self.key_function(
+    def get_key_prefix(self, request):
+        key_prefix = self.key_function(
             request,
             *request.resolver_match.args,
             **request.resolver_match.kwargs
         )
+        if key_prefix is not None:
+            key_prefix = str(key_prefix).replace(' ', '_')
+        return key_prefix
 
     def process_request(self, request):
-        self.patch_key_prefix(request)
+        self.key_prefix = self.get_key_prefix(request)
         return super().process_request(request)
 
     def process_response(self, request, response):
-        self.patch_key_prefix(request)
+        self.key_prefix = self.get_key_prefix(request)
         if 'Expires' in response:
             # Replace 'max-age' value of 'Cache-Control' header by one
             # calculated from the 'Expires' header's date.
