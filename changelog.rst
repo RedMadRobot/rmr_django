@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Release 1.0.25
+--------------
+
+- Enhancement: Added cache invalidation after :code:`rmr.views.Json.last_modified()` value has been changed
+
 Release 1.0.24
 --------------
 
