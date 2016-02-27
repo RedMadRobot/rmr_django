@@ -83,8 +83,13 @@ LOGGING = {
         },
     },
     'loggers': {
-        '': {
+        'django': {
             'handlers': ['null'],
+            'level': 'ERROR',
+        },
+        'rmr': {
+            'handlers': ['null'],
+            'level': 'ERROR',
         },
     },
 }
