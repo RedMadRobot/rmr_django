@@ -1,5 +1,3 @@
-import functools
-
 from django.middleware import cache
 from django.utils.cache import patch_cache_control
 from django.utils.http import parse_http_date
