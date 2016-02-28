@@ -37,6 +37,7 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'rmr.extensions.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.http.ConditionalGetMiddleware',
     'rmr.extensions.middleware.json.RequestDecoder',
 )
