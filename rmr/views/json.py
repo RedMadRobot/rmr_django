@@ -5,7 +5,6 @@ import logging
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse, HttpRequest
 from django.utils.decorators import classonlymethod
-from django.views.decorators.cache import cache_control
 from django.views.decorators.http import last_modified
 from django.utils.functional import lazy
 from django.views.generic import View
@@ -45,12 +44,6 @@ class Json(View):
         pass
 
     @classmethod
-    def cache_control(cls):
-        return dict(
-            max_age=lazy(cls.expires, int)(),
-        )
-
-    @classmethod
     def cache_headers_allowed(cls, request, *args, **kwargs):
         return request.method in ('GET', 'HEAD')
 
@@ -59,9 +52,8 @@ class Json(View):
         view = patched_view = super().as_view(**initkwargs)
         last_modified_evaluator = functools.lru_cache()(cls.last_modified)
         patched_view = last_modified(last_modified_evaluator)(patched_view)
-        patched_view = cache_control(**cls.cache_control())(patched_view)
         patched_view = cache_page(
-            None,  # will be used value of Cache-Control.max-age or default one
+            lazy(cls.expires, int)(),
             key_prefix=last_modified_evaluator,
         )(patched_view)
         view = conditional(cls.cache_headers_allowed, patched_view)(view)
@@ -127,7 +119,9 @@ class Json(View):
                 ),
             )
 
-        return JsonResponse(api_result, status=http_code)
+        response = JsonResponse(api_result, status=http_code)
+        response.setdefault('Content-Length', len(response.content))
+        return response
 
     @staticmethod
     def get_range(offset=None, limit=None, limit_default=None, limit_max=None):
