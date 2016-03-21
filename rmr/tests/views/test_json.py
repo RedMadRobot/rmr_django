@@ -89,6 +89,7 @@ urlpatterns = [
     url(r'error', JsonWithError.as_view(), name='error'),
     url(r'ok', JsonWithoutError.as_view(), name='ok'),
     url(r'cache', CacheJson.as_view(), name='cache'),
+    url(r'last_modified', CacheJson.as_view(), name='last_modified'),
     url(r'validate', ValidationJson.as_view(), name='validate'),
 ]
 
@@ -114,28 +115,28 @@ class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
         mocked_get = mock.MagicMock(return_value=None)
         with mock.patch.multiple(CacheJson, timestamp=timestamp1, get=mocked_get):
             client.get(
-                reverse('cache'),
+                reverse('last_modified'),
             )
             self.assertTrue(mocked_get.called)
 
         mocked_get = mock.MagicMock(return_value=None)
         with mock.patch.multiple(CacheJson, timestamp=timestamp1, get=mocked_get):
             client.get(
-                reverse('cache'),
+                reverse('last_modified'),
             )
             self.assertFalse(mocked_get.called)
 
         mocked_get = mock.MagicMock(return_value=None)
         with mock.patch.multiple(CacheJson, timestamp=timestamp2, get=mocked_get):
             client.get(
-                reverse('cache'),
+                reverse('last_modified'),
             )
             self.assertEqual(cache_stale_expected, mocked_get.called)
 
         mocked_get = mock.MagicMock(return_value=None)
         with mock.patch.multiple(CacheJson, timestamp=timestamp2, get=mocked_get):
             client.get(
-                reverse('cache'),
+                reverse('last_modified'),
             )
             self.assertFalse(mocked_get.called)
 
@@ -158,6 +159,11 @@ class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
             HTTP_IF_MODIFIED_SINCE='Thu, 01 Jan 2015 00:00:00 GMT',
         )
         self.assertIn('Content-Length', response)
+        self.assertIn('Last-Modified', response)
+        self.assertIn('Expires', response)
+        self.assertIn('Cache-Control', response)
+        self.assertIn('max-age=3600', response['Cache-Control'])
+        self.assertEqual('Thu, 01 Jan 2015 00:00:00 GMT', response['Last-Modified'])
         self.assertEqual('0', response['Content-Length'])
         self.assertEqual(304, response.status_code)
 
@@ -191,8 +197,26 @@ class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
             HTTP_IF_MODIFIED_SINCE='Thu, 01 Jan 2015 00:00:00 GMT',
         )
         self.assertIn('Content-Length', response)
+        self.assertIn('Last-Modified', response)
+        self.assertIn('Expires', response)
+        self.assertIn('Cache-Control', response)
+        self.assertIn('max-age=3600', response['Cache-Control'])
+        self.assertEqual('Thu, 01 Jan 2015 00:00:00 GMT', response['Last-Modified'])
         self.assertEqual('0', response['Content-Length'])
         self.assertEqual(304, response.status_code)
+
+        # GET request of cached content without If-Modified-Since provided
+        response = client.get(reverse('cache'))
+        self.assertEqual(Json.http_code, response.status_code)
+        self.assertIn('Content-Length', response)
+        self.assertIn('Content-Type', response)
+        self.assertIn('Cache-Control', response)
+        self.assertIn('Expires', response)
+        self.assertIn('Last-Modified', response)
+        self.assertEqual('14', response['Content-Length'])
+        self.assertIn('max-age=3600', response['Cache-Control'])
+        self.assertEqual('Thu, 01 Jan 2015 00:00:00 GMT', response['Last-Modified'])
+        self.assertEqual('application/json', response['Content-Type'])
 
         # POST request of cachable content with If-Modified-Since provided
         response = client.post(
@@ -212,8 +236,6 @@ class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
         self.assertIn('Cache-Control', response)
         self.assertIn('Content-Length', response)
         self.assertIn('Content-Type', response)
-        self.assertNotIn('Expires', response)
-        self.assertNotIn('Last-Modified', response)
         self.assertIn('max-age=0', response['Cache-Control'])
         self.assertEqual('14', response['Content-Length'])
         self.assertEqual('application/json', response['Content-Type'])

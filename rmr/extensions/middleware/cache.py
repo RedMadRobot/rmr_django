@@ -1,6 +1,7 @@
+from django.http import HttpResponseNotModified
 from django.middleware import cache
-from django.utils.cache import patch_cache_control
-from django.utils.http import parse_http_date
+from django.utils.cache import patch_cache_control, get_conditional_response, patch_response_headers
+from django.utils.http import parse_http_date, parse_http_date_safe
 from django.utils.timezone import now
 
 from rmr.utils.patch import patch
@@ -15,7 +16,13 @@ class UpdateCacheMiddleware(cache.UpdateCacheMiddleware):
     """
 
     def process_response(self, request, response):
-        if 'Expires' in response:
+        key_prefix = getattr(request, '_cache_key_prefix', self.key_prefix)
+        cache_timeout = getattr(request, '_cache_cache_timeout', self.cache_timeout)
+
+        if isinstance(response, HttpResponseNotModified):
+            patch_response_headers(response, cache_timeout=cache_timeout)
+            return response
+        elif 'Expires' in response:
             # Replace 'max-age' value of 'Cache-Control' header by one
             # calculated from the 'Expires' header's date.
             # This is necessary because of Django's `FetchFromCacheMiddleware`
@@ -26,9 +33,9 @@ class UpdateCacheMiddleware(cache.UpdateCacheMiddleware):
             timeout = expires - int(now().timestamp())
             patch_cache_control(response, max_age=timeout)
 
-        key_prefix = getattr(request, '_cache_key_prefix', self.key_prefix)
         with patch(self, 'key_prefix', key_prefix):
-            return super().process_response(request, response)
+            with patch(self, 'cache_timeout', cache_timeout):
+                return super().process_response(request, response)
 
 
 class CacheMiddleware(cache.CacheMiddleware):
@@ -56,7 +63,21 @@ class CacheMiddleware(cache.CacheMiddleware):
 
     def process_request(self, request):
         self.key_prefix = self.get_key_prefix(request)
-        return super().process_request(request)
+        request._cache_cache_timeout = int(self.cache_timeout)
+        response = super().process_request(request)
+        if response:
+            etag = response.get('ETag')
+            last_modified = response.get('Last-Modified')
+            if not (etag or last_modified):
+                return response
+            response = get_conditional_response(
+                request,
+                etag=etag,
+                last_modified=last_modified and parse_http_date_safe(last_modified),
+                response=response,
+            )
+            response['Last-Modified'] = last_modified
+            return response
 
     def process_response(self, request, response):
         request._cache_key_prefix = self.get_key_prefix(request)
