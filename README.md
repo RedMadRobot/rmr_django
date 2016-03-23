@@ -7,4 +7,4 @@ version_1.x: [![Build Status](https://travis-ci.org/RedMadRobot/rmr_django.svg?b
 
 ## Install
 * add `-e git+https://github.com/RedMadRobot/rmr_django.git#egg=rmr-django` to the list of your requirements (requirements.txt)
-* add 'rmr.extensions.middleware.json.RequestDecoder' middleware to the MIDDLEWARE_CLASSES of the settings file
+* add 'rmr.extensions.middleware.cache.UpdateCacheMiddleware' at the begin and 'rmr.extensions.middleware.json.RequestDecoder' at the end of the MIDDLEWARE_CLASSES of your settings file
