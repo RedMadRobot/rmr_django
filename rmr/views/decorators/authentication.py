@@ -3,8 +3,8 @@ import functools
 from rmr.errors import ClientError
 
 
-def authentication_required(func):
-    @functools.wraps(func)
+def authentication_required(fn):
+    @functools.wraps(fn)
     def _wrapper(request, *args, **kwargs):
         if not request.user.is_authenticated():
             raise ClientError(
@@ -12,5 +12,5 @@ def authentication_required(func):
                 http_code=401,
                 code='authentication_required',
             )
-        return func(request, *args, **kwargs)
+        return fn(request, *args, **kwargs)
     return _wrapper
