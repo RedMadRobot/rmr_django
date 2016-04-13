@@ -31,11 +31,15 @@ class RequestDecoder:
     @staticmethod
     def json_decode(body, encoding=None):
         data = json.loads(body, encoding=encoding)
+        if not isinstance(data, dict):
+            # all data of type other then dict will be returned as is
+            return data
         query_dict = QueryDict(mutable=True)
-        try:
-            query_dict.update(data)
-        except AttributeError:
-            # data is not a mapping (hasn't items() method)
-            raise ValueError
+        for key, value in data.items():
+            if isinstance(value, list):
+                # treat list values as set of values of MultiValueDict
+                query_dict.setlist(key, value)
+            else:
+                query_dict[key] = value
         query_dict._mutable = False
         return query_dict

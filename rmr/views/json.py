@@ -119,7 +119,7 @@ class Json(View):
                 ),
             )
 
-        response = JsonResponse(api_result, status=http_code)
+        response = JsonResponse(api_result, status=http_code, safe=False)
         response.setdefault('Content-Length', len(response.content))
         return response
 
