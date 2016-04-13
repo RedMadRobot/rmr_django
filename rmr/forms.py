@@ -1,10 +1,25 @@
+import warnings
+
 from django import forms
 
 
-class MultiValueField(forms.TypedMultipleChoiceField):
+class MultipleValueField(forms.TypedMultipleChoiceField):
 
     def valid_value(self, value):
         return True
+
+    def to_python(self, value):
+        return value
+
+
+class MultiValueField(MultipleValueField):
+
+    def __init__(self, *args, **kwargs):
+        warnings.warn(
+            "MultiValueField is deprecated use MultipleValueField instead",
+            DeprecationWarning,
+        )
+        super(MultipleValueField, self).__init__(*args, **kwargs)
 
 
 class BooleanField(forms.Field):
