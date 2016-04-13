@@ -1,6 +1,17 @@
 Changelog
 =========
 
+Release 1.0.27
+--------------
+
+- Fix: MultipleValueField now can be used with values containing lists
+- Enhancement: :code:`rmr.extensions.middleware.json.RequestDecoder` now can parse any JSON (not only objects)
+
+Release 1.0.26
+--------------
+
+- Enhancement: Added :code:`rmr.views.decorators.auth.authentication_required()` views decorator
+
 Release 1.0.25
 --------------
 
