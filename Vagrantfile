@@ -7,7 +7,7 @@ Vagrant.configure("2") do |config|
         app.vm.box_check_update = false
 
         app.vm.provider "virtualbox" do |vm|
-            vm.memory = 1024
+            vm.memory = 512
             vm.cpus = 2
             vm.name = "rmr"
         end
@@ -18,6 +18,7 @@ Vagrant.configure("2") do |config|
             5433 => 5433,    # PostgreSQL 9.5
             5672 => 5672,    # RabbitMQ
             15672 => 15672,  # RabbitMQ management
+            6379 => 6379,    # Redis
         }.each do |host, guest|
             app.vm.network "forwarded_port", host: host, guest: guest
         end
@@ -26,6 +27,7 @@ Vagrant.configure("2") do |config|
         app.vm.provision "docker" do |docker|
             docker.build_image "/vagrant/etc/postgres/9.4", args: "--tag=redmadrobot/postgres:9.4"
             docker.build_image "/vagrant/etc/postgres/9.5", args: "--tag=redmadrobot/postgres:9.5"
+            docker.build_image "/vagrant/etc/redis/sessions", args: "--tag=redmadrobot/redis:3-sessions"
         end
 
         # remove obsolete Docker images
@@ -34,7 +36,7 @@ Vagrant.configure("2") do |config|
 
     end
 
-    config.vm.define "postgres-9.4" do |app|
+    config.vm.define "postgres-9.4", autostart: false do |app|
 
         # http://docs.vagrantup.com/v2/docker/configuration.html
         app.vm.provider "docker" do |container|
@@ -56,7 +58,7 @@ Vagrant.configure("2") do |config|
 
     end
 
-    config.vm.define "postgres-9.5" do |app|
+    config.vm.define "postgres-9.5", autostart: false do |app|
 
         # http://docs.vagrantup.com/v2/docker/configuration.html
         app.vm.provider "docker" do |container|
@@ -78,7 +80,7 @@ Vagrant.configure("2") do |config|
 
     end
 
-    config.vm.define "rabbitmq" do |app|
+    config.vm.define "rabbitmq", autostart: false do |app|
 
         # http://docs.vagrantup.com/v2/docker/configuration.html
         app.vm.provider "docker" do |container|
@@ -101,5 +103,24 @@ Vagrant.configure("2") do |config|
         end
 
     end
+
+    config.vm.define "sessions", autostart: false do |app|
+
+            # http://docs.vagrantup.com/v2/docker/configuration.html
+            app.vm.provider "docker" do |container|
+                container.name = "sessions"
+                container.force_host_vm = true
+                container.image = "redmadrobot/redis:3-sessions"
+                container.ports = [
+                    "6379:6379",
+                ]
+                container.vagrant_machine = "docker"
+                container.vagrant_vagrantfile = __FILE__
+                container.volumes = [
+                    "/data/redis:/data",
+                ]
+            end
+
+        end
 
 end
