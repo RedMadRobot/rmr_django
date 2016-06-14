@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Release 1.0.28
+--------------
+
+- Enhancement: Added :code:`rmr.models.fields.PgLtreeField` supporting PostgreSQL's ltree extension
+
 Release 1.0.27
 --------------
 
