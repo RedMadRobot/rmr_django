@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Release 1.0.29
+--------------
+
+- Enhancement: Added :code:`rmr.utils.datetime.get_date_range` function
+
 Release 1.0.28
 --------------
 
