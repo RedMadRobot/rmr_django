@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Release 1.0.30
+--------------
+
+- Enhancement: Added :code:`rmr.utils.db.dictfetchall` function
+
 Release 1.0.29
 --------------
 
