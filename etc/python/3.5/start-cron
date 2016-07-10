@@ -7,7 +7,7 @@ env | while read -r LINE; do  # read STDIN by line
     # remove existing definition of environment variable, ignoring exit code
     sed --in-place "/^${VAR}/d" /etc/security/pam_env.conf || true
     # append new default value of environment variable
-    echo "${VAR} DEFAULT=${VAL}" >> /etc/security/pam_env.conf
+    echo "${VAR} DEFAULT=\"${VAL}\"" >> /etc/security/pam_env.conf
 done
 
 # forward /var/log/cron.log to /dev/stdout
