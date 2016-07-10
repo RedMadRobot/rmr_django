@@ -15,6 +15,6 @@ RUN apt-get clean && apt-get update \
 # CRON
 RUN apt-get clean && apt-get update \
     && apt-get install -y rsyslog
-COPY start-cron.sh /start-cron.sh
+COPY start-cron /usr/sbin
 
 RUN rm -rf /var/lib/apt/lists/*
