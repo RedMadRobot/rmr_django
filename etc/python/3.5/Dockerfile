@@ -16,5 +16,8 @@ RUN apt-get clean && apt-get update \
 RUN apt-get clean && apt-get update \
     && apt-get install -y rsyslog
 COPY start-cron /usr/sbin
+RUN touch /var/log/cron.log \
+    && chown www-data:www-data /var/log/cron.log \
+    && ln -sf /dev/stdout /var/log/cron.log
 
 RUN rm -rf /var/lib/apt/lists/*

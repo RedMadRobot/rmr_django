@@ -10,11 +10,6 @@ env | while read -r LINE; do  # read STDIN by line
     echo "${VAR} DEFAULT=\"${VAL}\"" >> /etc/security/pam_env.conf
 done
 
-# forward /var/log/cron.log to /dev/stdout
-touch /var/log/cron.log
-chown www-data:www-data /var/log/cron.log
-ln -sf /dev/stdout /var/log/cron.log
-
 # start cron
 rsyslogd
 service cron start
