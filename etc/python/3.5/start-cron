@@ -14,8 +14,12 @@ done
 service rsyslog start
 service cron start
 
+# start "daemon"
+tail -f /dev/null &
+PID=$!
+
 # trap SIGINT and SIGTERM signals and gracefully exit
-trap "service cron stop; service rsyslog stop; exit" SIGINT SIGTERM
+trap "kill ${PID}; service cron stop; service rsyslog stop; exit" SIGINT SIGTERM
 
 # wait until exit
-tail -f /dev/null & wait $!
+wait ${PID}
