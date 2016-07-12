@@ -11,12 +11,11 @@ env | while read -r LINE; do  # read STDIN by line
 done
 
 # start cron
-rsyslogd
+service rsyslog start
 service cron start
 
 # trap SIGINT and SIGTERM signals and gracefully exit
-trap "service cron stop; exit" SIGINT SIGTERM
-while true
-do
-    tail -f /dev/null & wait ${!}
-done
+trap "service cron stop; service rsyslog stop; exit" SIGINT SIGTERM
+
+# wait until exit
+tail -f /dev/null & wait $!
