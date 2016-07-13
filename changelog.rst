@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Release 1.0.31
+--------------
+
+- Enhancement: Added :code:`rmr.extensions.middleware.version.VersionMiddleware` function
+
 Release 1.0.30
 --------------
 
