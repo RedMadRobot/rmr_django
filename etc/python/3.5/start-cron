@@ -10,15 +10,15 @@ env | while read -r LINE; do  # read STDIN by line
     echo "${VAR} DEFAULT=\"${VAL}\"" >> /etc/security/pam_env.conf
 done
 
-# start cron
-service cron start
-
 # start "daemon"
 tail -f /var/log/cron.log &
 PID=$!
 
+# start cron
+service cron start
+
 # trap SIGINT and SIGTERM signals and gracefully exit
-trap "kill ${PID}; service cron stop; exit" SIGINT SIGTERM
+trap "service cron stop; kill ${PID}; exit" SIGINT SIGTERM
 
 # wait until exit
 wait ${PID}
