@@ -14,10 +14,9 @@ RUN apt-get clean && apt-get update \
 
 # CRON
 RUN apt-get clean && apt-get update \
-    && apt-get install -y rsyslog
+    && apt-get install -y cron
 COPY start-cron /usr/sbin
-RUN touch /var/log/cron.log \
-    && chown www-data:www-data /var/log/cron.log \
-    && ln -sf /dev/stdout /var/log/cron.log
+RUN mkfifo /var/log/cron.log \
+    && chmod 0666 /var/log/cron.log
 
 RUN rm -rf /var/lib/apt/lists/*
