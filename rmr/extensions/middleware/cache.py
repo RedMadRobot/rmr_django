@@ -82,7 +82,8 @@ class CacheMiddleware(cache.CacheMiddleware):
     def process_response(self, request, response):
         request._cache_key_prefix = self.get_key_prefix(request)
 
-        # you must add rmr's UpdateCacheMiddleware at the top of the
-        # MIDDLEWARE_CLASSES to be able to save responses in the cache
-        # see https://code.djangoproject.com/ticket/15855
+        # You must add rmr's UpdateCacheMiddleware at the top of the
+        # MIDDLEWARE_CLASSES to be able to save responses in the cache.
+        # The reason is that other middlewares can modify Vary header.
+        # See https://code.djangoproject.com/ticket/15855
         return response
