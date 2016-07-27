@@ -1,4 +1,5 @@
 import logging
+import warnings
 
 from django.core.management.base import BaseCommand as DjangoBaseCommand
 
@@ -9,6 +10,13 @@ class BaseCommand(DjangoBaseCommand):
     Use logging.info(), logging.debug() and other logging methods to
     print log messages
     """
+
+    def __init__(self, *args, **kwargs):
+        warnings.warn(
+            'BaseCommand is deprecated and will be removed '
+            'in rmr-django 2.0, use original one instead',
+            RuntimeWarning,
+        )
 
     @property
     def logger_name(self):

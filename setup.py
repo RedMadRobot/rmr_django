@@ -20,13 +20,16 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
+        'Framework :: Django',
+        'Framework :: Django :: 1.8',
+        'Framework :: Django :: 1.9',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Topic :: Internet :: WWW/HTTP',
     ],
     install_requires=[
-        'django>=1.8,<2.0',
         'crcmod>=1.7,<2.0',
-        'psycopg2>=2.6,<3.0',
+        'django-cache>=0.1,<0.2',
     ],
 )

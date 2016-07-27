@@ -29,7 +29,7 @@ urlpatterns = [
 
 
 @override_settings(ROOT_URLCONF=__name__)
-class RequestDecoderTestCase(django.test.TestCase, metaclass=Parametrized):
+class RequestDecoderTestCase(django.test.SimpleTestCase, metaclass=Parametrized):
 
     def setUp(self):
         self.client = django.test.Client()

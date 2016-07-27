@@ -1,4 +1,3 @@
-from django.contrib.postgres import lookups
 from django.db import models
 
 
@@ -12,6 +11,6 @@ class PgTrigramTextField(models.TextField):
 
 @PgTrigramCharField.register_lookup
 @PgTrigramTextField.register_lookup
-class SimilarTo(lookups.PostgresSimpleLookup):
+class SimilarTo(models.Transform):
     lookup_name = 'similar'
     operator = '%%'  # escaped '%'

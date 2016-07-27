@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 
 import django.test
-from django.utils import timezone
 
 from django.test.utils import override_settings
 
@@ -10,7 +9,7 @@ from rmr.utils.test import Parametrized
 
 
 @override_settings(ROOT_URLCONF=__name__)
-class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
+class DatetimeTestCase(django.test.SimpleTestCase, metaclass=Parametrized):
 
     maxDiff = None
 

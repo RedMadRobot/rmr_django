@@ -1,14 +1,28 @@
+import warnings
+
+
 class DataSet:
 
     def __init__(self, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs
+        warnings.warn(
+            'DataSet is deprecated and will be removed in rmr-django 2.0, '
+            'use unittest.TestCase.subTest instead',
+            DeprecationWarning,
+        )
 
     def __str__(self):
         return '(args={}, kwargs={})'.format(self.args, self.kwargs)
 
 
 def data_provider(*data_sets):
+    warnings.warn(
+        'data_provider is deprecated and will be removed in rmr-django 2.0, '
+        'use unittest.TestCase.subTest instead',
+        DeprecationWarning,
+    )
+
     def _decorator(test_method):
         test_method.__data_sets__ = data_sets
         return test_method
@@ -19,6 +33,12 @@ def data_provider(*data_sets):
 class Parametrized(type):
 
     def __new__(mcs, name, mro, attrs):
+        warnings.warn(
+            'Parametrized metaclass is deprecated and will be removed '
+            'in rmr-django 2.0, use unittest.TestCase.subTest instead',
+            category=RuntimeWarning, stacklevel=2,
+        )
+
         actual_attrs = {}
         for method_name, method in attrs.items():
             data_sets = getattr(method, '__data_sets__', None)

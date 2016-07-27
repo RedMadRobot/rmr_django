@@ -1,14 +1,13 @@
-from django.utils.decorators import decorator_from_middleware_with_args
-
-from rmr.extensions.middleware.cache import CacheMiddleware
+import warnings
 
 
-def cache_page(cache_timeout, *, cache=None, key_prefix=None):
-    """
-    This decorator is very similar to `django.views.decorators.cache.cache_page`
-    but instead of `django.middleware.cache.CacheMiddleware` it uses overridden
-    version
-    """
-    return decorator_from_middleware_with_args(CacheMiddleware)(
-        cache_timeout=cache_timeout, cache_alias=cache, key_prefix=key_prefix
+def cache_page(*args, **kwargs):
+    warnings.warn(
+        'cache_page is deprecated and no longer needed to use cache, '
+        'it will be removed in rmr-django 2.0',
+        DeprecationWarning,
     )
+
+    def _decorator(fn):
+        return fn
+    return _decorator

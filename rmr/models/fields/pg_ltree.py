@@ -1,51 +1,33 @@
 from django.db import models
-from django.db.models import Lookup
 
 
-class PgLtreeField(models.CharField):
-    description = 'ltree (up to %(max_length)s)'
+class PgLtreeField(models.TextField):
 
-    def __init__(self, *args, **kwargs):
-        kwargs['max_length'] = 255
-        super().__init__(*args, **kwargs)
+    description = 'Ltree'
 
     def db_type(self, connection):
         return 'ltree'
 
-    def deconstruct(self):
-        name, path, args, kwargs = super().deconstruct()
-        del kwargs['max_length']
-        return name, path, args, kwargs
+    def get_internal_type(self):
+        return "CharField"
+
+    def formfield(self, **kwargs):
+        return super(models.TextField, self).formfield()
 
 
 @PgLtreeField.register_lookup
-class AncestorOf(Lookup):
+class AncestorOf(models.Transform):
     lookup_name = 'ancestor_of'
-
-    def as_sql(self, qn, connection):
-        lhs, lhs_params = self.process_lhs(qn, connection)
-        rhs, rhs_params = self.process_rhs(qn, connection)
-        params = lhs_params + rhs_params
-        return '%s @> %s' % (lhs, rhs), params
+    operator = '@>'
 
 
 @PgLtreeField.register_lookup
-class DescendantOf(Lookup):
+class DescendantOf(models.Transform):
     lookup_name = 'descendant_of'
-
-    def as_sql(self, qn, connection):
-        lhs, lhs_params = self.process_lhs(qn, connection)
-        rhs, rhs_params = self.process_rhs(qn, connection)
-        params = lhs_params + rhs_params
-        return '%s <@ %s' % (lhs, rhs), params
+    operator = '<@'
 
 
 @PgLtreeField.register_lookup
-class Match(Lookup):
+class Match(models.Transform):
     lookup_name = 'match'
-
-    def as_sql(self, qn, connection):
-        lhs, lhs_params = self.process_lhs(qn, connection)
-        rhs, rhs_params = self.process_rhs(qn, connection)
-        params = lhs_params + rhs_params
-        return '%s ~ %s' % (lhs, rhs), params
+    operator = '~'

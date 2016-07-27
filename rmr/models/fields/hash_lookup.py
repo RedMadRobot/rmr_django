@@ -1,3 +1,5 @@
+import warnings
+
 from django.db import models
 
 from rmr.utils.hash import crc64
@@ -6,6 +8,10 @@ from rmr.utils.hash import crc64
 class HashLookup(models.BigIntegerField):
 
     def __init__(self, *args, object_field, **kwargs):
+        warnings.warn(
+            'HashLookup is deprecated and will be removed in rmr-django 2.0',
+            DeprecationWarning,
+        )
         self.object_field = object_field
         super().__init__(*args, **kwargs)
 

@@ -1,11 +1,9 @@
-import os
+import warnings
 
+from rmr.middleware.version import VersionMiddleware
 
-class VersionMiddleware:
-
-    @staticmethod
-    def process_response(request, response):
-        version = os.environ.get('APP_VERSION')
-        if version:
-            response['App-Version'] = version
-        return response
+warnings.warn(
+    'VersionMiddleware moved to rmr.middleware.version, make sure '
+    'you import it from the new place before upgrading to rmr-django 2.0',
+    category=RuntimeWarning,
+)

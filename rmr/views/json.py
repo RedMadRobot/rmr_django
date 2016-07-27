@@ -1,18 +1,18 @@
 import contextlib
 import functools
 import logging
+import warnings
 
-from django.conf import settings
 from django.http import JsonResponse, HttpResponse, HttpRequest
 from django.utils.decorators import classonlymethod
-from django.views.decorators.http import last_modified
-from django.utils.functional import lazy
+from django.views.decorators import http
 from django.views.generic import View
+
+from djangocache import cache_page
 
 import rmr
 
-from rmr.utils.cache import cache_page
-from rmr.utils.decorators import conditional
+from rmr.utils import decorators
 
 request_logger = logging.getLogger('rmr.request')
 
@@ -30,11 +30,13 @@ class Json(View):
         self.request = request
 
     @classmethod
-    def expires(cls):
+    def expires(cls, request, *args, **kwargs):
         """
-        Lazy evaluated 'max-age' value of Cache-Control header
+        Lazy evaluated response cache TTL in seconds,
+        corresponds to the Cache-Control's max-age value
+        and also used to evaluate Expires header
         """
-        return settings.CACHE_MIDDLEWARE_SECONDS
+        return 0  # cache disabled
 
     @classmethod
     def last_modified(cls, request, *args, **kwargs):
@@ -44,19 +46,34 @@ class Json(View):
         pass
 
     @classmethod
-    def cache_headers_allowed(cls, request, *args, **kwargs):
-        return request.method in ('GET', 'HEAD')
+    def etag(cls, request, *args, **kwargs):
+        """
+        Lazy evaluated value of ETag header
+        """
+        pass
 
     @classonlymethod
     def as_view(cls, **initkwargs):
-        view = patched_view = super().as_view(**initkwargs)
-        last_modified_evaluator = functools.lru_cache()(cls.last_modified)
-        patched_view = last_modified(last_modified_evaluator)(patched_view)
+        def normalize_key_prefix(key_prefix):
+            def _key_prefix(request, *args, **kwargs):
+                return str(
+                    key_prefix(request, *args, **kwargs)
+                ).replace(' ', '_')
+            return _key_prefix
+
+        patched_view = view = super().as_view(**initkwargs)
+
+        patched_view = http.etag(cls.etag)(patched_view)
+        patched_view = http.last_modified(cls.last_modified)(patched_view)
         patched_view = cache_page(
-            lazy(cls.expires, int)(),
-            key_prefix=last_modified_evaluator,
+            cache_timeout=cls.expires,
+            key_prefix=normalize_key_prefix(cls.last_modified),
         )(patched_view)
-        view = conditional(cls.cache_headers_allowed, patched_view)(view)
+
+        view = decorators.replace_if(
+            lambda request, *args, **kwargs: request.method in ('GET', 'HEAD'),
+            replacement=patched_view,
+        )(view)
 
         @functools.wraps(cls.as_view)
         def logging_view(request, *args, **kwargs):
@@ -125,8 +142,13 @@ class Json(View):
 
     @staticmethod
     def get_range(offset=None, limit=None, limit_default=None, limit_max=None):
-        # TODO make another method with offset/limit validation delegated to rmr.forms.OffsetLimit
-        # TODO make deprecated
+        warnings.warn(
+            'rmr.views.Json.get_range() is deprecated and will be removed '
+            'in rmr-django 2.0, use rmr.utils.range.get_range() instead and/or '
+            'rmr.forms.OffsetLimit form to validate offset/limit request '
+            'params',
+            category=DeprecationWarning,
+        )
         start = 0
         stop = None
         with contextlib.suppress(ValueError):

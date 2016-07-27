@@ -9,6 +9,7 @@ import django.test
 from django import forms
 from django.conf.urls import url
 from django.core.urlresolvers import reverse
+from django.http import HttpResponse
 from django.test.utils import override_settings
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -48,7 +49,7 @@ class CacheJson(Json):
         return datetime(2015, 1, 1, tzinfo=timezone.utc)
 
     @classmethod
-    def expires(cls):
+    def expires(cls, request, *args, **kwargs):
         return 3600
 
     def get(self, request):
@@ -93,9 +94,19 @@ urlpatterns = [
     url(r'validate', ValidationJson.as_view(), name='validate'),
 ]
 
+dummy_setter = property(fset=lambda *_: None)
+
 
 @override_settings(ROOT_URLCONF=__name__)
-class JsonTestCase(django.test.TestCase, metaclass=Parametrized):
+class JsonTestCase(django.test.SimpleTestCase, metaclass=Parametrized):
+
+    def setUp(self):
+        HttpResponse.wsgi_request = dummy_setter
+        HttpResponse.request = dummy_setter
+
+    def tearDown(self):
+        del HttpResponse.wsgi_request
+        del HttpResponse.request
 
     @data_provider(
         DataSet(

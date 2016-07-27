@@ -1,3 +1,5 @@
+import warnings
+
 from datetime import datetime, timedelta
 
 from django.utils import timezone
@@ -6,6 +8,8 @@ NOW = object()
 
 
 def fromtimestamp(timestamp):
+    if timestamp is None:
+        return None
     return datetime.fromtimestamp(timestamp, tz=timezone.get_current_timezone())
 
 
@@ -26,6 +30,11 @@ def get_date_range(
 
     :rtype: (datetime, datetime)
     """
+    warnings.warn(
+        'get_date_range is deprecated and will be removed in rmr-django 2.0, '
+        'use rmr.forms.StartStopTime to validate request params',
+        category=DeprecationWarning,
+    )
     max_range = max_range or None
     if max_range and None in (start_date, end_date):
         raise ValueError(
