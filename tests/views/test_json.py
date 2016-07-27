@@ -9,13 +9,12 @@ import django.test
 from django import forms
 from django.conf.urls import url
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse
 from django.test.utils import override_settings
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 
 from rmr.errors import ClientError, ServerError
-from rmr.utils.test import data_provider, DataSet, Parametrized
+from rmr.utils.test import data_provider, DataSet, Parametrized, Client
 from rmr.views import Json
 from rmr.views.decorators.validation import validate_request
 
@@ -100,14 +99,6 @@ dummy_setter = property(fset=lambda *_: None)
 @override_settings(ROOT_URLCONF=__name__)
 class JsonTestCase(django.test.SimpleTestCase, metaclass=Parametrized):
 
-    def setUp(self):
-        HttpResponse.wsgi_request = dummy_setter
-        HttpResponse.request = dummy_setter
-
-    def tearDown(self):
-        del HttpResponse.wsgi_request
-        del HttpResponse.request
-
     @data_provider(
         DataSet(
             timestamp1=None,
@@ -121,7 +112,7 @@ class JsonTestCase(django.test.SimpleTestCase, metaclass=Parametrized):
         ),
     )
     def test_last_modified_as_cache_key(self, timestamp1, timestamp2, cache_stale_expected):
-        client = django.test.Client()
+        client = Client()
 
         mocked_get = mock.MagicMock(return_value=None)
         with mock.patch.multiple(CacheJson, timestamp=timestamp1, get=mocked_get):
@@ -157,12 +148,12 @@ class JsonTestCase(django.test.SimpleTestCase, metaclass=Parametrized):
         DataSet('ok', Json.http_code),
     )
     def test_status_code(self, url_name, expected_status_code):
-        client = django.test.Client()
+        client = Client()
         response = client.get(reverse(url_name))
         self.assertEqual(expected_status_code, response.status_code)
 
     def test_response_headers(self):
-        client = django.test.Client()
+        client = Client()
 
         # GET request of not cached content with If-Modified-Since provided
         response = client.get(
@@ -389,7 +380,7 @@ class JsonTestCase(django.test.SimpleTestCase, metaclass=Parametrized):
         self.assertEqual(expected_error_code, error.exception.code)
 
     def test_validate_request(self):
-        client = django.test.Client()
+        client = Client()
         path = reverse('validate')
 
         # GET validation
@@ -459,7 +450,7 @@ class JsonTestCase(django.test.SimpleTestCase, metaclass=Parametrized):
         ),
     )
     def test_validate_request_errors(self, method, query, data, invalid_params):
-        client = django.test.Client()
+        client = Client()
         path = reverse('validate')
         response = client.generic(
             method=method,
