@@ -6,7 +6,7 @@ with open('README.md') as description:
 
 setup(
     name='rmr-django',
-    version='1.0.31',
+    version='1.1',
     author='Rinat Khabibiev',
     author_email='srenskiy@gmail.com',
     packages=list(map('rmr.'.__add__, find_packages(where='rmr'))) + ['rmr'],
@@ -27,6 +27,7 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Topic :: Internet :: WWW/HTTP',
+        'Environment :: Web Environment',
     ],
     install_requires=[
         'crcmod>=1.7,<2.0',

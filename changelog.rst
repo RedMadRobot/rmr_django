@@ -1,6 +1,12 @@
 Changelog
 =========
 
+Release 1.1
+-----------
+
+- Change: Quite big changes in project structure, added several deprecation and runtime warnings
+- Enhancement: Added :code:`rmr.forms.StartStopTime` form
+
 Release 1.0.31
 --------------
 
