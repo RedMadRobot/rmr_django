@@ -1,11 +1,18 @@
 Changelog
 =========
 
+Release 1.1.1
+-------------
+
+- Fix: :code:`rmr.views.Json.expires()`: fixed compatibility with versions 1.0.x
+
 Release 1.1
 -----------
 
 - Change: Quite big changes in project structure, added several deprecation and runtime warnings
 - Enhancement: Added :code:`rmr.forms.StartStopTime` form
+- Enhancement: Added :code:`rmr.views.Json.etag()` method
+- Change: :code:`rmr.views.Json.expires()` returns 0 instead of :code:`settings.CACHE_MIDDLEWARE_SECONDS`
 
 Release 1.0.31
 --------------
