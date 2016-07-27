@@ -4,6 +4,7 @@ import logging
 import warnings
 
 from django.http import JsonResponse, HttpResponse, HttpRequest
+from django.utils import six
 from django.utils.decorators import classonlymethod
 from django.views.decorators import http
 from django.views.generic import View
@@ -30,7 +31,17 @@ class Json(View):
         self.request = request
 
     @classmethod
-    def expires(cls, request, *args, **kwargs):
+    def _expires(cls, request, *args, **kwargs):
+        if not six.get_function_defaults(cls.expires):
+            warnings.warn(
+                'In rmr-django 2.0 Json.expires() will be called with '
+                'additional arguments: (request, *args, **kwargs)',
+                category=RuntimeWarning,
+            )
+        return cls.expires()
+
+    @classmethod
+    def expires(cls, request=None, *args, **kwargs):
         """
         Lazy evaluated response cache TTL in seconds,
         corresponds to the Cache-Control's max-age value
@@ -66,7 +77,7 @@ class Json(View):
         patched_view = http.etag(cls.etag)(patched_view)
         patched_view = http.last_modified(cls.last_modified)(patched_view)
         patched_view = cache_page(
-            cache_timeout=cls.expires,
+            cache_timeout=cls._expires,
             key_prefix=normalize_key_prefix(cls.last_modified),
         )(patched_view)
 

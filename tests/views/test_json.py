@@ -49,7 +49,7 @@ class CacheJson(Json):
         return datetime(2015, 1, 1, tzinfo=timezone.utc)
 
     @classmethod
-    def expires(cls, request, *args, **kwargs):
+    def expires(cls):
         return 3600
 
     def get(self, request):
