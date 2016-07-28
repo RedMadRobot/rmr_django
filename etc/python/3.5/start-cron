@@ -11,7 +11,7 @@ env | while read -r LINE; do  # read STDIN by line
 done
 
 # start "daemon"
-tail -f /var/log/cron.log &
+cat /var/log/cron.log &
 PID=$!
 
 # start cron

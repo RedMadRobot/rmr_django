@@ -6,16 +6,17 @@ RUN apt-get clean && apt-get update \
     && add-apt-repository ppa:maxmind/ppa \
     && sed --in-place 's/jessie/trusty/g' /etc/apt/sources.list.d/maxmind-ppa-jessie.list \
     && apt-get update \
-    && apt-get install -y libmaxminddb0 libmaxminddb-dev mmdb-bin
+    && apt-get install -y libmaxminddb0 libmaxminddb-dev mmdb-bin \
+    && rm -rf /var/lib/apt/lists/*
 
 # GeoDjango requirements: https://docs.djangoproject.com/en/1.9/ref/contrib/gis/install/geolibs/
 RUN apt-get clean && apt-get update \
-    && apt-get install -y binutils libproj-dev gdal-bin
+    && apt-get install -y binutils libproj-dev gdal-bin \
+    && rm -rf /var/lib/apt/lists/*
 
 # CRON
 RUN apt-get clean && apt-get update \
-    && apt-get install -y cron
+    && apt-get install -y cron \
+    && rm -rf /var/lib/apt/lists/*
 COPY start-cron /usr/sbin
 RUN mkfifo --mode 0666 /var/log/cron.log
-
-RUN rm -rf /var/lib/apt/lists/*
