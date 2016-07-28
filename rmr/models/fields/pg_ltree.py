@@ -1,3 +1,4 @@
+from django.contrib.postgres import lookups
 from django.db import models
 
 
@@ -16,18 +17,18 @@ class PgLtreeField(models.TextField):
 
 
 @PgLtreeField.register_lookup
-class AncestorOf(models.Transform):
+class AncestorOf(lookups.PostgresSimpleLookup):
     lookup_name = 'ancestor_of'
     operator = '@>'
 
 
 @PgLtreeField.register_lookup
-class DescendantOf(models.Transform):
+class DescendantOf(lookups.PostgresSimpleLookup):
     lookup_name = 'descendant_of'
     operator = '<@'
 
 
 @PgLtreeField.register_lookup
-class Match(models.Transform):
+class Match(lookups.PostgresSimpleLookup):
     lookup_name = 'match'
     operator = '~'
