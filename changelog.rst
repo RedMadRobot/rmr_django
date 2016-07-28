@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Release 1.1.3
+-------------
+
+- Fix: Fixed lookups of :code:`PgTrigramTextField`, :code:`PgTrigramCharField` and :code:`PgLtreeField`
+
 Release 1.1.2
 -------------
 
