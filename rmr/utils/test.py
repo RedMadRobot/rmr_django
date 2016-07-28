@@ -56,12 +56,12 @@ class Parametrized(type):
                 ))(method, data_set)
         return super().__new__(mcs, name, mro, actual_attrs)
 
-dummy_setter = property(fset=lambda *_: None)
-
 
 class Client(test.Client):
 
     def request(self, **request):
-        with patch(http.HttpResponse, 'wsgi_request', dummy_setter):
-            with patch(http.HttpResponse, 'request', dummy_setter):
+        with patch(http.HttpResponse, 'wsgi_request', _dummy_setter):
+            with patch(http.HttpResponse, 'request', _dummy_setter):
                 return super().request(**request)
+
+_dummy_setter = property(fset=lambda *_: None)
