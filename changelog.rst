@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Release 1.1.2
+-------------
+
+- Enhancement: Added :code:`rmr.utils.test.Client` to use as a replacement of :code:`django.test.Client`
+
 Release 1.1.1
 -------------
 

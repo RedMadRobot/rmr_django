@@ -6,7 +6,7 @@ with open('README.md') as description:
 
 setup(
     name='rmr-django',
-    version='1.1.1',
+    version='1.1.2',
     author='Rinat Khabibiev',
     author_email='srenskiy@gmail.com',
     packages=list(map('rmr.'.__add__, find_packages(where='rmr'))) + ['rmr'],
