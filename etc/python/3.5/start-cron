@@ -40,7 +40,7 @@ done
 service cron start
 
 # trap SIGINT and SIGTERM signals and gracefully exit
-trap "kill \$!; service cron stop; exit" SIGINT SIGTERM
+trap "service cron stop; kill \$!; exit" SIGINT SIGTERM
 
 # start "daemon"
 while true
