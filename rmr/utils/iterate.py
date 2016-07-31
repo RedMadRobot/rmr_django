@@ -37,4 +37,4 @@ def consume(iterator):
     """
     Consumes provided iterator
     """
-    collections.deque(iterator, 0)
+    all(True for _ in iterator)
