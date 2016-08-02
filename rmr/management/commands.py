@@ -15,8 +15,9 @@ class BaseCommand(DjangoBaseCommand):
         warnings.warn(
             'BaseCommand is deprecated and will be removed '
             'in rmr-django 2.0, use original one instead',
-            RuntimeWarning,
+            category=RuntimeWarning,
         )
+        super().__init__(*args, **kwargs)
 
     @property
     def logger_name(self):
