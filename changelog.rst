@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Release 1.1.4
+-------------
+
+- Fix: Fixed :code:`rmr.management.commands.BaseCommand.__init__()`
+
 Release 1.1.3
 -------------
 
