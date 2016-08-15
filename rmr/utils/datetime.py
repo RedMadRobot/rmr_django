@@ -2,7 +2,9 @@ import warnings
 
 from datetime import datetime, timedelta
 
-from django.utils import timezone
+import pytz
+
+from django.utils import timezone, lru_cache
 
 NOW = object()
 
@@ -18,6 +20,21 @@ def strptime(date_string, format, default_tz=timezone.utc):
     if timezone.is_naive(dt):
         dt = timezone.make_aware(dt, timezone=default_tz)
     return timezone.localtime(dt)
+
+
+@lru_cache.lru_cache(maxsize=None)
+def get_timezones_with_hour(hour):
+    """
+    Returns list of timezones where current hour equals to provided value
+    """
+
+    now = timezone.now()
+
+    return [
+        tz for tz
+        in pytz.common_timezones_set
+        if timezone.localtime(now, pytz.timezone(tz)).hour == hour
+    ]
 
 
 def get_date_range(

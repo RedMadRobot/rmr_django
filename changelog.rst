@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Release 1.1.5
+-------------
+
+- Enhancement: Added :code:`rmr.utils.datetime.get_timezones_with_hour()`
+
 Release 1.1.4
 -------------
 
