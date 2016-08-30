@@ -1,13 +1,12 @@
 import json
 import urllib.parse
-
 from datetime import datetime
 from unittest import mock
 
 import django.test
-
 from django import forms
 from django.conf.urls import url
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
 from django.utils import timezone
@@ -83,14 +82,23 @@ class ValidationJson(Json):
     def patch(self, request):
         pass
 
+class ValidationFile(Json):
+    class FileValidationForm(forms.Form):
+        file = forms.FileField(required=True)
+
+    @method_decorator(validate_request(post=FileValidationForm))
+    def post(self, request):
+        return request.FILES['file'].name
+
 
 urlpatterns = [
-    url(r'warning', JsonWithWarning.as_view(), name='warning'),
-    url(r'error', JsonWithError.as_view(), name='error'),
-    url(r'ok', JsonWithoutError.as_view(), name='ok'),
-    url(r'cache', CacheJson.as_view(), name='cache'),
-    url(r'last_modified', CacheJson.as_view(), name='last_modified'),
-    url(r'validate', ValidationJson.as_view(), name='validate'),
+    url(r'warning$', JsonWithWarning.as_view(), name='warning'),
+    url(r'error$', JsonWithError.as_view(), name='error'),
+    url(r'ok$', JsonWithoutError.as_view(), name='ok'),
+    url(r'cache$', CacheJson.as_view(), name='cache'),
+    url(r'last_modified$', CacheJson.as_view(), name='last_modified'),
+    url(r'validate$', ValidationJson.as_view(), name='validate'),
+    url(r'validate_file$', ValidationFile.as_view(), name='validate_file'),
 ]
 
 dummy_setter = property(fset=lambda *_: None)
@@ -468,3 +476,34 @@ class JsonTestCase(django.test.SimpleTestCase, metaclass=Parametrized):
         data = json.loads(response.content.decode())
         actual_invalid_params = data.get('error', {}).get('description', {}).keys()
         self.assertSetEqual(invalid_params, set(actual_invalid_params))
+
+    def test_file_validate_request(self):
+        excepted_json = {
+            "data": "document.txt"
+        }
+
+        client = Client()
+        path = reverse('validate_file')
+
+        response = client.post(
+            path,
+            data={
+                "file": SimpleUploadedFile(
+                    "document.txt",
+                    b"file_content",
+                    content_type="text/plain"
+                )
+            }
+        )
+
+        self.assertEqual(200, response.status_code)
+        self.assertDictEqual(
+            excepted_json,
+            json.loads(response.content.decode())
+        )
+
+    def test_file_validate_request_errors(self):
+        client = Client()
+        path = reverse('validate_file')
+        response = client.post(path)
+        self.assertEqual(400, response.status_code)

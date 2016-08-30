@@ -10,7 +10,7 @@ def validate_request(*, get=forms.Form, post=forms.Form):
         @functools.wraps(view)
         def _view(request: http.HttpRequest, *args, **kwargs):
             form_get = get(request.GET)
-            form_post = post(request.POST)
+            form_post = post(request.POST, request.FILES)
             if False in (form_get.is_valid(), form_post.is_valid()):
                 raise rmr.ClientError(
                     code='validation_error',
