@@ -1,10 +1,11 @@
 Changelog
 =========
 
-Next release (1.1.5)
---------------------
+Release 1.1.5
+-------------
 
 - Enhancement: Added :code:`rmr.utils.datetime.get_timezones_with_hour()`
+- Fix: :code:`rmr.views.decorators.validate.validate_request()` considers request.FILES now
 
 Release 1.1.4
 -------------
