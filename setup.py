@@ -31,7 +31,7 @@ setup(
     ],
     install_requires=[
         'crcmod>=1.7,<2.0',
-        'django-cache>=0.1,<0.2',
+        'django-cache>=0.1,<0.3',
         'pytz',
     ],
 )
