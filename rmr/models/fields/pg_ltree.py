@@ -63,7 +63,7 @@ class LtreeArrayField(ArrayField):
         # value example: '{1.2,1.3,1.4}'
         # remove brackets {}, then split by comma
         # return ['1.2', '1.3', '1.4']
-        return value[1:-1].split(',')
+            return [] if value == '{}' else value[1:-1].split(',')
 
 
 @LtreeArrayField.register_lookup
