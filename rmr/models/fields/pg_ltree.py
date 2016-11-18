@@ -21,12 +21,17 @@ class PgLtreeField(models.TextField):
 
 class LtreeLookup(lookups.PostgresSimpleLookup):
     def as_sql(self, qn, connection):
-        sql, params = super().as_sql(qn, connection)
-        sql = '%s::%s' % (sql, self.lhs.output_field.db_type(connection))
+        lhs, lhs_params = self.process_lhs(qn, connection)
+        rhs, rhs_params = self.process_rhs(qn, connection)
         if isinstance(self.rhs, list) or isinstance(self.rhs, tuple):
             # Cast to array
-            sql += '[]'
-        return sql, params
+            # With any clause GIST index will work
+            rhs = 'ANY(%s::%s[])' % (
+                rhs,
+                self.lhs.output_field.db_type(connection)
+            )
+
+        return '%s %s %s' % (lhs, self.operator, rhs), lhs_params + rhs_params
 
 
 @PgLtreeField.register_lookup
