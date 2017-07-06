@@ -21,6 +21,14 @@ class Error(Exception):
     def __str__(self):
         return '[{code}] {message}'.format(message=self.message, code=self.code)
 
+    def to_dict(self):
+        dict(
+            error=dict(
+                code=self.code,
+                description=self.message,
+            ),
+        )
+
 
 class ServerError(Error):
 
