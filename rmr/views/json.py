@@ -140,12 +140,7 @@ class Json(View):
             )
 
             http_code = error.http_code
-            api_result = dict(
-                error=dict(
-                    code=error.code,
-                    description=error.message,
-                ),
-            )
+            api_result = error.to_dict()
 
         response = JsonResponse(api_result, status=http_code, safe=False)
         response.setdefault('Content-Length', len(response.content))
