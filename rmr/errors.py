@@ -22,7 +22,7 @@ class Error(Exception):
         return '[{code}] {message}'.format(message=self.message, code=self.code)
 
     def to_dict(self):
-        dict(
+        return dict(
             error=dict(
                 code=self.code,
                 description=self.message,
